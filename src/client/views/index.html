@@ -1,38 +1,74 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title>Test</title>
-    </head>
+<head>
+    <meta charset="utf-8">
+    <title>Sentiment Analysis</title>
+</head>
 
-    <body>
+<body>
 
-        <header>
-            <div class="">
-                Logo
-            </div>
-            <div class="">
-                navigation
-            </div>
-        </header>
+<header>
+    <div class="">
+        Logo
+    </div>
+    <div class="">
+        <a href="https://www.google.com/">Back to Google</a>
+    </div>
+</header>
 
-        <main>
-            <section>
-                <form class="" onsubmit="return ClientLib.handleSubmit(event)">
-                    <input id="name" type="text" name="input" value="" placeholder="Name">
-                    <input type="submit" name="" value="submit" onclick="return ClientLib.handleSubmit(event)" onsubmit="return ClientLib.handleSubmit(event)">
-                </form>
-            </section>
+<main>
+    <h1>Sentiment Analysis</h1>
+    <section>
+        <form class="" onsubmit="return ClientLib.handleSubmit(event)">
+            <label for="text">Your text</label>
+            <textarea id="text" name="input" placeholder="Insert your text here"></textarea>
+            <input type="submit" name="" value="submit" onclick="return ClientLib.handleSubmit(event)"
+                   onsubmit="return ClientLib.handleSubmit(event)">
+        </form>
+    </section>
 
-            <section>
-                <strong>Form Results:</strong>
-                <div id="results"></div>
-            </section>
-        </main>
+    <section>
+        <label for="results">Results</label>
+        <div class="results" id="results">
+            <p id="status-line">Results will be shown here after you click "submit"</p>
+            <table id="results-table">
+                <caption>Results</caption>
+                <thead class="table-header">
+                <tr>
+                    <th scope="col">Parameter</th>
+                    <th scope="col">Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Polarity</th>
+                        <td id="polarity"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Subjectivity</th>
+                        <td id="subjectivity"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Irony</th>
+                        <td id="irony"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Agreement</th>
+                        <td id="agreement"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Confidence</th>
+                        <td id="confidence"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
-        <footer>
-            <p>This is a footer</p>
-        </footer>
+<footer>
+    <p>&copy; 2023 Super Duper Data Analytics</p>
+</footer>
 
-    </body>
+</body>
 </html>

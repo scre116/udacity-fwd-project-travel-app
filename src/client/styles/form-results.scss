@@ -1,0 +1,63 @@
+$border: 1px solid gray;
+
+textarea, input, .results {
+  padding: 5px 20px;
+  width: 100%;
+  line-height: 16px;
+  margin: 10px 0;
+}
+
+textarea {
+  height: 200px;
+  border: $border;
+}
+
+label {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.results {
+  border: $border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  #status-line {
+    color: gray;
+    font-weight: bold;
+  }
+  
+  table {
+    visibility: hidden;
+    width: 50%;
+    border-collapse: collapse;
+    padding: 0;
+    
+    thead {
+      background-color: gray;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    tbody {
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    }
+    
+    td, th {
+      text-align: left;
+        padding: 5px;
+    }
+    
+    caption {
+      visibility: hidden;
+      height: 0;
+    }
+  }
+}
