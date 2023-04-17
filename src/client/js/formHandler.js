@@ -4,7 +4,7 @@ function handleSubmit(event) {
     let formText = document.getElementById('text').value
     console.log(`::: Form Submitted with text ${formText} :::`)
     
-    fetch('http://localhost:8080/analyze?text=' + formText)
+    return fetch('http://localhost:8080/analyze?text=' + formText)
     .then(res => res.json())
     .then(function(res) {
         console.log(res);
