@@ -9,13 +9,6 @@ const app = express();
 app.use(express.static('dist'));
 app.use(cors());
 
-console.log(__dirname);
-
-// designates what port the app will listen to for incoming requests
-app.listen(8080, function () {
-    console.log('Example app listening on port 8080!');
-})
-
 app.get('/', function (req, res) {
     res.sendFile('dist/index.html');
 })
@@ -62,6 +55,8 @@ function extractData(response) {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     }
 }
+
+module.exports = app;
 
 
 
