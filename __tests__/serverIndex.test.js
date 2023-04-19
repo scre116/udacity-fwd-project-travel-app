@@ -5,6 +5,7 @@ global.fetch = require('jest-fetch-mock');
 describe('GET /', () => {
     it('should respond with index.html', async () => {
         const response = await request(app).get('/');
+        
         expect(response.statusCode).toBe(200);
         expect(response.text).toContain("<title>Sentiment Analysis</title>");
     });
@@ -28,14 +29,16 @@ describe('GET /analyze', () => {
         }));
 
         const response = await request(app).get('/analyze?text=test');
+        
         expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/https:\/\/api\.meaningcloud\.com\/sentiment-2\.1\?key=.*&lang=en&egp=y&txt=test/));
         expect(response.statusCode).toBe(200);
-        expect(response.body.polarity).toBe('Without Polarity');
-        expect(response.body.subjectivity).toBe('Objective');
-        expect(response.body.irony).toBe('Nonironic');
-        expect(response.body.agreement).toBe('Agreement');
-        expect(response.body.confidence).toBe('100');
-
+        expect(response.body).toEqual({
+            polarity: 'Without Polarity',
+            subjectivity: 'Objective',
+            irony: 'Nonironic',
+            agreement: 'Agreement',
+            confidence: '100'
+        });
     });
     
     it('should response with error if status code is not 0',  async  () => {
@@ -44,6 +47,7 @@ describe('GET /analyze', () => {
         }));
 
         const response = await request(app).get('/analyze?text=test');
+        
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({"error": "ERROR MSG"});
     });
@@ -52,6 +56,7 @@ describe('GET /analyze', () => {
         fetch.mockRejectOnce('some error');
 
         const response = await request(app).get('/analyze?text=test');
+        
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({"error": "some error"});
     });
