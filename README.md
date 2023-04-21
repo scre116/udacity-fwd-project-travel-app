@@ -1,5 +1,5 @@
 
-# Evaluate a news article with Natural Language Processing
+# Evaluate text with Natural Language Processing
 
 ## Overview
 
