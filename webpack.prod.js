@@ -15,6 +15,7 @@ module.exports = {
         minimizer: [new TerserPlugin({}), new CssMinimizerPlugin({})],
     },
     output: {
+        path: path.resolve(__dirname, 'dist'),
         filename: 'main.js',
         library: {
             name: 'ClientLib',
@@ -41,12 +42,6 @@ module.exports = {
             favicon: "./src/client/images/favicon.png"
         }),
         new CleanWebpackPlugin({
-            dry: false,
-            // Write Logs to Console
-            verbose: true,
-            // Automatically remove all unused webpack assets on rebuild
-            cleanStaleWebpackAssets: true,
-            protectWebpackAssets: false
         }),
         new MiniCssExtractPlugin({
             filename: "[name].css",
