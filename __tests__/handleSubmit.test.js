@@ -1,4 +1,4 @@
-import {handleSubmit} from "../src/client/js/formHandler"
+import {handleSubmit, validateForm} from "../src/client/js/formHandler"
 
 // Mock the required functions and dependencies
 global.fetch = require('jest-fetch-mock');
@@ -66,5 +66,23 @@ describe('handleSubmit', () => {
         expect(mockElements['status-line'].style.visibility).toBe('visible');
         expect(mockElements['results-table'].style.visibility).toBe('hidden');
 
+    });
+});
+
+describe('validateForm', () => {
+    test('empty text', () => {
+        mockElements.text.value = '';
+        
+        expect(validateForm()).toBe(false);
+        
+        expect(mockElements['status-line'].innerHTML).toBe('Please enter some text to analyze');
+        expect(mockElements['status-line'].style.visibility).toBe('visible');
+        expect(mockElements['results-table'].style.visibility).toBe('hidden');
+    });
+
+    test('non-empty text', () => {
+        mockElements.text.value = 'test-text';
+        
+        expect(validateForm()).toBe(true);
     });
 });

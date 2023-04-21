@@ -13,11 +13,10 @@
 
 <main>
     <section>
-        <form onsubmit="return ClientLib.handleSubmit(event)">
+        <form onsubmit="return ClientLib.validateForm() && ClientLib.handleSubmit(event)">
             <label for="text">Your text</label>
-            <textarea id="text" name="input" placeholder="Insert your text here"></textarea>
-            <input type="submit" name="" value="submit" onclick="return ClientLib.handleSubmit(event)"
-                   onsubmit="return ClientLib.handleSubmit(event)">
+            <textarea id="text" name="textarea" placeholder="Insert your text here"></textarea>
+            <input type="submit" name="input" value="submit">
         </form>
     </section>
 
