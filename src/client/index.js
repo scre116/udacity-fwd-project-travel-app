@@ -6,8 +6,6 @@ import './styles/footer.scss'
 import './styles/form-results.scss'
 import './styles/header.scss'
 
-
-
 export {
     handleSubmit, validateForm
 }
