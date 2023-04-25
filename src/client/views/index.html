@@ -2,60 +2,46 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
-    <title>Sentiment Analysis</title>
+    <title>Travel Planer</title>
+    <!-- prevent resize on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 
 <body>
 
 <header>
-    <h1>Sentiment Analysis</h1>
+    <h1>Travel Planer</h1>
 </header>
 
 <main>
-    <section>
-        <form onsubmit="return ClientLib.validateForm() && ClientLib.handleSubmit(event)">
-            <label for="text">Your text</label>
-            <textarea id="text" name="textarea" placeholder="Insert your text here"></textarea>
-            <input type="submit" name="input" value="submit">
-        </form>
+    <section id="trips">
+        <h2 id="no-trips-message">No trips planned</h2>
+        <template id="trip-template">
+            <div class="trip">
+                <h2>My trip to <span class="destination">Paris, France</span></h2>
+                <p class="departing-date"><strong>Departing:</strong> <span class="departing-date">02/12/2023</span> <span
+                        class="days">(100 days away)</span></p>
+                <img class="img-destination" src="https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg" alt="Paris">
+                <div class="weather">
+                    <p><strong>Typical weather is:</strong></p>
+                    <p>High: 15°C</p>
+                    <p>Low: 5°C</p>
+                    <p>Humidity: 30%</p>
+                    <p>Chance of rain: 0%</p>
+                </div>
+            </div>
+        </template>
     </section>
 
-    <section>
-        <label for="results">Results</label>
-        <div class="results" id="results">
-            <p id="status-line">Results will be shown here after you click "submit"</p>
-            <table id="results-table">
-                <caption>Results</caption>
-                <thead class="table-header">
-                <tr>
-                    <th scope="col">Parameter</th>
-                    <th scope="col">Value</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">Polarity</th>
-                        <td id="polarity"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Subjectivity</th>
-                        <td id="subjectivity"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Irony</th>
-                        <td id="irony"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Agreement</th>
-                        <td id="agreement"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Confidence</th>
-                        <td id="confidence"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <section id="add-trip">
+        <h2>Add new trip</h2>
+        <form>
+            <label for="input-destination">Destination</label>
+            <input id="input-destination" type="text" name="place" placeholder="Put your destination here">
+            <label for="input-departing-date">Departing on</label>
+            <input id="input-departing-date" type="date" name="date">
+            <input id="submit-form" type="submit" name="input">
+        </form>
     </section>
 </main>
 
@@ -63,14 +49,14 @@
     <p>&copy; 2023 Super Duper Data Analytics</p>
 </footer>
 
-<script>
-    // Check that service workers are supported
-    if ('serviceWorker' in navigator) {
-        // Use the window load event to keep the page load performant
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js');
-        });
-    }
-</script>
+<!--<script>-->
+<!--    // Check that service workers are supported-->
+<!--    if ('serviceWorker' in navigator) {-->
+<!--        // Use the window load event to keep the page load performant-->
+<!--        window.addEventListener('load', () => {-->
+<!--            navigator.serviceWorker.register('/service-worker.js');-->
+<!--        });-->
+<!--    }-->
+<!--</script>-->
 </body>
 </html>
