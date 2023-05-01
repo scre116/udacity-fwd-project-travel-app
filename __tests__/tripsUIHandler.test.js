@@ -1,4 +1,4 @@
-import {computeDaysUntilDeparture, createTripElement} from '../src/client/js/tripsUIHandler';
+import {computeDaysUntilDeparture, createTripElement, updateTripsUI} from '../src/client/js/tripsUIHandler';
 import {JSDOM} from 'jsdom';
 import fs from 'fs';
 import path from 'path';
@@ -110,5 +110,101 @@ describe('createTripElement', () => {
 
     });
 
-    // Add more tests for different scenarios, e.g., trips in the past, trips today, etc.
+    test('creates a trip element with the correct information when the departure date is now', () => {
+        const trip = {
+            destination: 'New York',
+            departureDate: new Date(2023, 0, 1),
+            imgDestination: 'https://example.com/image.jpg',
+            weather: {
+                tempHigh: 85,
+                tempLow: 60,
+                humidity: 60,
+                chanceOfRain: 20,
+            },
+        };
+
+        const tripElement = createTripElement(trip);
+
+        const daysUntilDeparture = tripElement.querySelector('.days-until-departure');
+        expect(daysUntilDeparture.innerHTML).toBe('(Today)');
+    });
+
+    test('creates a trip element with the correct information when the departure date is in the past', () => {
+        const trip = {
+            destination: 'New York',
+            departureDate: new Date(2022, 11, 29),
+            imgDestination: 'https://example.com/image.jpg',
+            weather: {
+                tempHigh: 85,
+                tempLow: 60,
+                humidity: 60,
+                chanceOfRain: 20,
+            },
+        };
+
+        const tripElement = createTripElement(trip);
+
+        const daysUntilDeparture = tripElement.querySelector('.days-until-departure');
+        expect(daysUntilDeparture.innerHTML).toBe('(3 days ago)');
+    });
+});
+
+describe('updateTripsUI', () => {
+
+    beforeEach(() => {
+        setupDOM();
+    });
+
+
+    test('updates the trips UI', () => {
+        const trips = [
+            {
+                destination: 'New York',
+                departureDate: new Date(2023, 7, 1),
+                imgDestination: 'https://example.com/image.jpg',
+                weather: {
+                    tempHigh: 85,
+                    tempLow: 60,
+                    humidity: 60,
+                    chanceOfRain: 20,
+                },
+            },
+            {
+                destination: 'Paris',
+                departureDate: new Date(2023, 8, 1),
+                imgDestination: 'https://example.com/image.jpg',
+                weather: {
+                    tempHigh: 75,
+                    tempLow: 50,
+                    humidity: 50,
+                    chanceOfRain: 10,
+                },
+            },
+        ];
+
+        updateTripsUI(trips);
+
+        const tripElements = document.querySelectorAll('.trip');
+        expect(tripElements.length).toBe(2);
+
+        const firstTrip = tripElements[0];
+        const firstTripDestination = firstTrip.querySelector('.destination');
+        expect(firstTripDestination.innerHTML).toBe('New York');
+
+        const secondTrip = tripElements[1];
+        const secondTripDestination = secondTrip.querySelector('.destination');
+        expect(secondTripDestination.innerHTML).toBe('Paris');
+    });
+
+    test('updates the trips UI when there are no trips', () => {
+        const trips = [];
+
+        updateTripsUI(trips);
+
+        const tripElements = document.querySelectorAll('.trip');
+        expect(tripElements.length).toBe(0);
+
+        const noTripsMessage = document.querySelector('#no-trips-message');
+        expect(noTripsMessage.innerHTML).toBe('No trips saved yet');
+    });
 });

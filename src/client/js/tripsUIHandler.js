@@ -35,7 +35,7 @@ function createTripElement(trip) {
     // set days until departure
     const daysUntilDeparture = tripElement.querySelector('.days-until-departure');
     const daysCount = computeDaysUntilDeparture(trip.departureDate);
-    if (daysCount == 0) {
+    if (daysCount === 0) {
         daysUntilDeparture.innerHTML = '(Today)';
     } else if (daysCount > 0) {
         daysUntilDeparture.innerHTML = `(${daysCount} days away)`;
