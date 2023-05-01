@@ -1,24 +1,24 @@
-import {handleSubmit, validateForm} from "../src/client/js/formHandler"
+import {handleSubmit, validateForm} from "../../src/client/js/formHandler"
 
 // Mock the required functions and dependencies
 global.fetch = require('jest-fetch-mock');
 
 // Set up the jsdom environment
-const { JSDOM } = require('jsdom');
-const { window } = new JSDOM();
-const document  = window.document;
+const {JSDOM} = require('jsdom');
+const {window} = new JSDOM();
+const document = window.document;
 global.document = document;
 
 // Mock the getElementById function
 const mockElements = {
-    text: { value: 'test-text' },
-    polarity: { innerHTML: '' },
-    subjectivity: { innerHTML: '' },
-    irony: { innerHTML: '' },
-    agreement: { innerHTML: '' },
-    confidence: { innerHTML: '' },
-    'status-line': { innerHTML: '', style: { visibility: '' } },
-    'results-table': { style: { visibility: '' } }
+    text: {value: 'test-text'},
+    polarity: {innerHTML: ''},
+    subjectivity: {innerHTML: ''},
+    irony: {innerHTML: ''},
+    agreement: {innerHTML: ''},
+    confidence: {innerHTML: ''},
+    'status-line': {innerHTML: '', style: {visibility: ''}},
+    'results-table': {style: {visibility: ''}}
 };
 
 // Mock the getElementById function
@@ -31,13 +31,15 @@ describe('handleSubmit', () => {
     });
 
     test('successful API call', async () => {
-        const event = { preventDefault: jest.fn() };
+        const event = {preventDefault: jest.fn()};
         fetch.mockResponseOnce(JSON.stringify(
-            { polarity: 'Negative', 
-            subjectivity: 'Subjective', 
-            irony: 'Nonironic', 
-            agreement: 'Disagreement', 
-            confidence: '100'}));
+            {
+                polarity: 'Negative',
+                subjectivity: 'Subjective',
+                irony: 'Nonironic',
+                agreement: 'Disagreement',
+                confidence: '100'
+            }));
 
         await handleSubmit(event);
 
@@ -54,14 +56,14 @@ describe('handleSubmit', () => {
     });
 
     test('API call with error', async () => {
-        const event = { preventDefault: jest.fn() };
-        fetch.mockResponseOnce(JSON.stringify({ error: 'An error occurred' }));
+        const event = {preventDefault: jest.fn()};
+        fetch.mockResponseOnce(JSON.stringify({error: 'An error occurred'}));
 
         await handleSubmit(event);
 
         expect(event.preventDefault).toHaveBeenCalled();
         expect(fetch).toHaveBeenCalledWith('http://localhost:8080/analyze?text=test-text');
-        
+
         expect(mockElements['status-line'].innerHTML).toBe('Webservice call resulted in an error: "An error occurred"');
         expect(mockElements['status-line'].style.visibility).toBe('visible');
         expect(mockElements['results-table'].style.visibility).toBe('hidden');
@@ -72,9 +74,9 @@ describe('handleSubmit', () => {
 describe('validateForm', () => {
     test('empty text', () => {
         mockElements.text.value = '';
-        
+
         expect(validateForm()).toBe(false);
-        
+
         expect(mockElements['status-line'].innerHTML).toBe('Please enter some text to analyze');
         expect(mockElements['status-line'].style.visibility).toBe('visible');
         expect(mockElements['results-table'].style.visibility).toBe('hidden');
@@ -82,7 +84,7 @@ describe('validateForm', () => {
 
     test('non-empty text', () => {
         mockElements.text.value = 'test-text';
-        
+
         expect(validateForm()).toBe(true);
     });
 });

@@ -1,4 +1,5 @@
 function updateTripsUI(savedTrips) {
+    console.log('Updating UI with trips: ', savedTrips);
     const trips = document.getElementById('trips');
     trips.innerHTML = '';
 
@@ -30,11 +31,12 @@ function createTripElement(trip) {
 
     // set departure date
     const departureDate = tripElement.querySelector('.departure-date');
-    departureDate.innerHTML = trip.departureDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+    const date = new Date(trip.departureDate);
+    departureDate.innerHTML = date.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
 
     // set days until departure
     const daysUntilDeparture = tripElement.querySelector('.days-until-departure');
-    const daysCount = computeDaysUntilDeparture(trip.departureDate);
+    const daysCount = computeDaysUntilDeparture(date);
     if (daysCount === 0) {
         daysUntilDeparture.innerHTML = '(Today)';
     } else if (daysCount > 0) {

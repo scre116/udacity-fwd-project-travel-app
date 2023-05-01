@@ -1,6 +1,6 @@
 import {updateTripsUI} from './tripsUIHandler'
 
-function handleSubmit(event) {
+async function handleSubmit(event) {
     event.preventDefault()
     showTextInStatusLine(null)
 
@@ -13,31 +13,28 @@ function handleSubmit(event) {
     let newTrip = {destination: destination, departureDate: departureDate};
     console.log('Sending request to server with body: ', newTrip);
 
-    fetch('http://localhost:8080/add-trip', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newTrip),
-    })
-        .then(res => res.json())
-        .then(function (res) {
-            console.log(res);
-            if (res.error) {
-                throw res.error;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError("Webservice call resulted in an error: " + JSON.stringify(error.message));
-        })
-        .then(() => {
-            resetForm();
-        })
-        .then(() => {
-            showSuccess('Trip added successfully');
-        })
-        .then(() => refreshTrips());
+    try {
+        const response = await fetch('http://localhost:8080/trip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newTrip),
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw data.error;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAddTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
+    }
+
+    resetForm();
+    showAddTripSuccess('Trip added successfully');
+    await refreshTrips();
 
 }
 
@@ -46,12 +43,26 @@ function resetForm() {
     document.getElementById('input-departure-date').value = '';
 }
 
-function refreshTrips() {
-    const trips = loadTrips();
+async function refreshTrips() {
+    const trips = await loadTrips();
     updateTripsUI(trips);
 }
 
-function loadTrips() {
+async function loadTrips() {
+// send request to server
+    try {
+        const response = await fetch('http://localhost:8080/trips');
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw data.error;
+        }
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        showAddTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
+    }
     // fake trips
     const savedTrips = [
         {
@@ -96,7 +107,7 @@ function validateForm() {
     const textarea = document.getElementById('text');
 
     if (textarea.value.trim() === '') {
-        showError('Please enter some text to analyze');
+        showAddTripError('Please enter some text to analyze');
         return false;
     } else {
         return true;
@@ -104,11 +115,11 @@ function validateForm() {
 }
 
 
-function showSuccess(textToShow) {
+function showAddTripSuccess(textToShow) {
     showTextInStatusLine(textToShow, false);
 }
 
-function showError(textToShow) {
+function showAddTripError(textToShow) {
     showTextInStatusLine(textToShow, true);
 }
 
@@ -121,6 +132,7 @@ function showTextInStatusLine(textToShow, isError) {
         statusLine.className = 'success';
     }
 }
+
 
 window.addEventListener('DOMContentLoaded', refreshTrips)
 document.getElementById('form-add-trip').addEventListener('submit', handleSubmit)

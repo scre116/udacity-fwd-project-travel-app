@@ -1,4 +1,4 @@
-import {computeDaysUntilDeparture, createTripElement, updateTripsUI} from '../src/client/js/tripsUIHandler';
+import {computeDaysUntilDeparture, createTripElement, updateTripsUI} from '../../src/client/js/tripsUIHandler';
 import {JSDOM} from 'jsdom';
 import fs from 'fs';
 import path from 'path';
@@ -44,7 +44,7 @@ describe('computeDaysUntilDeparture', () => {
 function setupDOM() {
     // Read the contents of the index.html file
     const htmlContent = fs.readFileSync(
-        path.resolve(__dirname, '../src/client/views/index.html'),
+        path.resolve(__dirname, '../../src/client/views/index.html'),
         'utf-8'
     );
 
@@ -71,7 +71,7 @@ describe('createTripElement', () => {
     test('creates a trip element with the correct information', () => {
         const trip = {
             destination: 'New York',
-            departureDate: new Date(2023, 7, 1),
+            departureDate: '2023-08-01', // 'August 1, 2023'
             imgDestination: 'https://example.com/image.jpg',
             weather: {
                 tempHigh: 85,
@@ -113,7 +113,7 @@ describe('createTripElement', () => {
     test('creates a trip element with the correct information when the departure date is now', () => {
         const trip = {
             destination: 'New York',
-            departureDate: new Date(2023, 0, 1),
+            departureDate: '2023-01-01', // 'January 1, 2023'
             imgDestination: 'https://example.com/image.jpg',
             weather: {
                 tempHigh: 85,
@@ -132,7 +132,7 @@ describe('createTripElement', () => {
     test('creates a trip element with the correct information when the departure date is in the past', () => {
         const trip = {
             destination: 'New York',
-            departureDate: new Date(2022, 11, 29),
+            departureDate: '2022-12-29', // 'December 29, 2022
             imgDestination: 'https://example.com/image.jpg',
             weather: {
                 tempHigh: 85,
@@ -160,7 +160,7 @@ describe('updateTripsUI', () => {
         const trips = [
             {
                 destination: 'New York',
-                departureDate: new Date(2023, 7, 1),
+                departureDate: '2023-08-01', // August 1, 2023
                 imgDestination: 'https://example.com/image.jpg',
                 weather: {
                     tempHigh: 85,
@@ -171,7 +171,7 @@ describe('updateTripsUI', () => {
             },
             {
                 destination: 'Paris',
-                departureDate: new Date(2023, 8, 1),
+                departureDate: '2023-09-01', // September 1, 2023 
                 imgDestination: 'https://example.com/image.jpg',
                 weather: {
                     tempHigh: 75,
