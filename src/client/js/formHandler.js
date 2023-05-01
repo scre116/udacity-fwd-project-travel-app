@@ -2,30 +2,48 @@ import {updateTripsUI} from './tripsUIHandler'
 
 function handleSubmit(event) {
     event.preventDefault()
+    showTextInStatusLine(null)
 
     const destination = document.getElementById('input-destination').value
-    const departureDate = document.getElementById('input-departing-date').value
+    const departureDate = document.getElementById('input-departure-date').value
 
     console.log(`::: Form Submitted with destination ${destination} and departure date ${departureDate} :::`)
 
-
     // send request to server
+    let newTrip = {destination: destination, departureDate: departureDate};
+    console.log('Sending request to server with body: ', newTrip);
 
+    fetch('http://localhost:8080/add-trip', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTrip),
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            console.log(res);
+            if (res.error) {
+                throw res.error;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError("Webservice call resulted in an error: " + JSON.stringify(error.message));
+        })
+        .then(() => {
+            resetForm();
+        })
+        .then(() => {
+            showSuccess('Trip added successfully');
+        })
+        .then(() => refreshTrips());
 
-    // load data from server
-    refreshTrips();
+}
 
-    // return fetch('http://localhost:8080/analyze?text=' + formText)
-    //     .then(res => res.json())
-    //     .then(function (res) {
-    //         console.log(res);
-    //         if (res.error) {
-    //             console.error("ERROR: ", res.error);
-    //             showError(res.error);
-    //         } else {
-    //             showResult(res);
-    //         }
-    //     })
+function resetForm() {
+    document.getElementById('input-destination').value = '';
+    document.getElementById('input-departure-date').value = '';
 }
 
 function refreshTrips() {
@@ -74,32 +92,38 @@ function loadTrips() {
     return savedTrips;
 }
 
-
-function showError(error) {
-    let textToShow = "Webservice call resulted in an error: " + JSON.stringify(error);
-    showTextInStatusLine(textToShow);
-}
-
 function validateForm() {
     const textarea = document.getElementById('text');
 
     if (textarea.value.trim() === '') {
-        showTextInStatusLine('Please enter some text to analyze');
+        showError('Please enter some text to analyze');
         return false;
     } else {
         return true;
     }
 }
 
-function showTextInStatusLine(textToShow) {
-    let statusLine = document.getElementById('status-line');
-    statusLine.innerHTML = textToShow;
-    statusLine.style.visibility = 'visible';
 
-    document.getElementById('results-table').style.visibility = 'hidden';
+function showSuccess(textToShow) {
+    showTextInStatusLine(textToShow, false);
+}
+
+function showError(textToShow) {
+    showTextInStatusLine(textToShow, true);
+}
+
+function showTextInStatusLine(textToShow, isError) {
+    let statusLine = document.getElementById('form-status-line');
+    statusLine.innerHTML = textToShow;
+    if (isError) {
+        statusLine.className = 'error';
+    } else {
+        statusLine.className = 'success';
+    }
 }
 
 window.addEventListener('DOMContentLoaded', refreshTrips)
+document.getElementById('form-add-trip').addEventListener('submit', handleSubmit)
 
 
 export {handleSubmit, validateForm}
