@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Travel Planer</title>
-    <!-- prevent resize on mobile -->
+    <!-- prevent zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 
@@ -15,31 +15,30 @@
 
 <main>
     <section id="trips">
-        <h2 id="no-trips-message">No trips planned</h2>
-        <template id="trip-template">
-            <div class="trip">
-                <h2>My trip to <span class="destination">Paris, France</span></h2>
-                <p class="departing-date"><strong>Departing:</strong> <span class="departing-date">02/12/2023</span> <span
-                        class="days">(100 days away)</span></p>
-                <img class="img-destination" src="https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg" alt="Paris">
-                <div class="weather">
-                    <p><strong>Typical weather is:</strong></p>
-                    <p>High: 15°C</p>
-                    <p>Low: 5°C</p>
-                    <p>Humidity: 30%</p>
-                    <p>Chance of rain: 0%</p>
-                </div>
-            </div>
-        </template>
     </section>
+    <template id="trip-template">
+        <div class="trip">
+            <h2>My trip to <span class="destination">Paris, France</span></h2>
+            <p class="departure"><strong>Departing:</strong> <span class="departure-date">12 December 2022</span> <span
+                    class="days-until-departure">(100 days away)</span></p>
+            <img class="img-destination" src="https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg" alt="Paris">
+            <div class="weather">
+                <p><strong>Typical weather is:</strong></p>
+                <p>High: <span class="temp-high">15</span>°C</p>
+                <p>Low: <span class="temp-low">5</span>°C</p>
+                <p>Humidity: <span class="humidity">30</span>%</p>
+                <p>Chance of rain: <span class="chance-of-rain">30</span>%</p>
+            </div>
+        </div>
+    </template>
 
     <section id="add-trip">
         <h2>Add new trip</h2>
         <form>
             <label for="input-destination">Destination</label>
-            <input id="input-destination" type="text" name="place" placeholder="Put your destination here">
-            <label for="input-departing-date">Departing on</label>
-            <input id="input-departing-date" type="date" name="date">
+            <input id="input-destination" type="text" name="destination" placeholder="Put your destination here">
+            <label for="input-departure-date">Departing on</label>
+            <input id="input-departure-date" type="date" name="departure-date">
             <input id="submit-form" type="submit" name="input">
         </form>
     </section>
@@ -49,14 +48,5 @@
     <p>&copy; 2023 Super Duper Data Analytics</p>
 </footer>
 
-<!--<script>-->
-<!--    // Check that service workers are supported-->
-<!--    if ('serviceWorker' in navigator) {-->
-<!--        // Use the window load event to keep the page load performant-->
-<!--        window.addEventListener('load', () => {-->
-<!--            navigator.serviceWorker.register('/service-worker.js');-->
-<!--        });-->
-<!--    }-->
-<!--</script>-->
 </body>
 </html>
