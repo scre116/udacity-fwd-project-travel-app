@@ -77,7 +77,7 @@ function computeDaysUntilDeparture(departureDate) {
     if (timeDifference == 0) {
         return 0;
     }
-    return timeDifference / (1000 * 60 * 60 * 24);
+    return Math.round(timeDifference / (1000 * 60 * 60 * 24));
 }
 
 export {updateTripsUI, createTripElement, computeDaysUntilDeparture}

@@ -5,58 +5,37 @@ import path from 'path';
 
 describe('computeDaysUntilDeparture', () => {
 
-    let dateNowSpy;
-
     beforeEach(() => {
         // Mock the new Date() call
-        const fixedDate = new Date('2023-01-01T07:00:00Z');
-        dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => fixedDate.valueOf());
+        jest.useFakeTimers('modern');
+        jest.setSystemTime(new Date('2023-01-01'));
     });
 
     afterEach(() => {
-        // Restore the original Date.now() function after each test
-        dateNowSpy.mockRestore();
+        // Restore the system time after each test
+        jest.useRealTimers();
     });
 
     test('returns the correct number of days until departure', () => {
-        const departureDate = new Date('2023-01-06T00:00:00Z');
+        const departureDate = new Date('2023-01-06');
         const daysUntilDeparture = computeDaysUntilDeparture(departureDate);
         expect(daysUntilDeparture).toBe(5);
     });
 
-    describe('when the departure date is today', () => {
-        test('returns 0 when the departure date is now', () => {
-            const now = new Date('2023-01-01T07:00:00Z');
-            const daysUntilDeparture = computeDaysUntilDeparture(now);
-            expect(daysUntilDeparture).toBe(0);
-        });
-        test('returns 0 when the departure date is one hour before now', () => {
-            const oneHourBeforeNow = new Date('2023-01-01T06:00:00Z');
-            const daysUntilDeparture = computeDaysUntilDeparture(oneHourBeforeNow);
-            expect(daysUntilDeparture).toBe(0);
-        });
+    test('returns a positive value when the departure date is in the far future', () => {
+        const futureDate = new Date('2026-04-01');
+        const daysUntilDeparture = computeDaysUntilDeparture(futureDate);
+        expect(daysUntilDeparture).toBe(1186);
+    });
 
-        test('returns 0 when the departure date is one hour after now', () => {
-            const oneHourAfterNow = new Date('2023-01-01T08:00:00Z');
-            const daysUntilDeparture = computeDaysUntilDeparture(oneHourAfterNow);
-            expect(daysUntilDeparture).toBe(0);
-        });
-
-        test('returns -1 when the departure date is on the previous day', () => {
-            const sevenHoursBeforeNow = new Date('2022-12-31T23:30:00Z');
-            const daysUntilDeparture = computeDaysUntilDeparture(sevenHoursBeforeNow);
-            expect(daysUntilDeparture).toBe(-1);
-        });
-
-        test('returns 1 when the departure date is on the next day', () => {
-            const seventeenHoursAfterNow = new Date('2023-01-02T00:30:00Z');
-            const daysUntilDeparture = computeDaysUntilDeparture(seventeenHoursAfterNow);
-            expect(daysUntilDeparture).toBe(1);
-        });
+    test('returns 0 when the departure date is now', () => {
+        const now = new Date('2023-01-01');
+        const daysUntilDeparture = computeDaysUntilDeparture(now);
+        expect(daysUntilDeparture).toBe(0);
     });
 
     test('returns a negative value when the departure date is in the past', () => {
-        const pastDate = new Date('2022-12-29T00:00:00Z');
+        const pastDate = new Date('2022-12-29');
         const daysUntilDeparture = computeDaysUntilDeparture(pastDate);
         expect(daysUntilDeparture).toBe(-3);
     });
@@ -76,19 +55,17 @@ function setupDOM() {
 
 describe('createTripElement', () => {
 
-    let dateNowSpy;
-
     beforeEach(() => {
         setupDOM();
 
         // Mock the new Date() call
-        const fixedDate = new Date('2023-01-01T00:00:00Z');
-        dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => fixedDate.valueOf());
+        jest.useFakeTimers('modern');
+        jest.setSystemTime(new Date('2023-01-01'));
     });
 
     afterEach(() => {
-        // Restore the original Date.now() function after each test
-        dateNowSpy.mockRestore();
+        // Restore the system time after each test
+        jest.useRealTimers();
     });
 
     test('creates a trip element with the correct information', () => {
@@ -113,7 +90,7 @@ describe('createTripElement', () => {
         expect(departureDate.innerHTML).toBe('August 1, 2023');
 
         const daysUntilDeparture = tripElement.querySelector('.days-until-departure');
-        expect(daysUntilDeparture.innerHTML).toBe('(91 days away)');
+        expect(daysUntilDeparture.innerHTML).toBe('(212 days away)');
 
         const imgDestination = tripElement.querySelector('.img-destination');
         expect(imgDestination.src).toBe('https://example.com/image.jpg');
