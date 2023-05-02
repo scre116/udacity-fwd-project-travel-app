@@ -10,12 +10,7 @@ async function loadTrips() {
     try {
         const response = await fetch('http://localhost:8080/trips');
 
-        const data = await response.json();
-
-        if (data.error) {
-            throw data.error;
-        }
-        return data;
+        return await response.json();
     } catch (error) {
         console.error('Error:', error);
         showLoadTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
