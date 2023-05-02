@@ -1,4 +1,3 @@
-$border: 1px solid gray;
 
 #add-trip {
   background-color: #FFF5CC;
@@ -19,15 +18,3 @@ label {
   text-align: left;
 }
 
-#form-status-line {
-  font-weight: bold;
-  font-size: 16px;
-
-  &.error {
-    color: red;
-  }
-
-  &.success {
-    color: green;
-  }
-}

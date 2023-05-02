@@ -2,7 +2,7 @@ import {updateTripsUI} from './tripsUIHandler'
 
 async function handleSubmit(event) {
     event.preventDefault()
-    showTextInStatusLine(null)
+    showTextInAddTripStatusLine(null)
 
     const destination = document.getElementById('input-destination').value
     const departureDate = document.getElementById('input-departure-date').value
@@ -30,6 +30,7 @@ async function handleSubmit(event) {
     } catch (error) {
         console.error('Error:', error);
         showAddTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
+        return;
     }
 
     resetForm();
@@ -49,7 +50,7 @@ async function refreshTrips() {
 }
 
 async function loadTrips() {
-// send request to server
+    resetLoadTripStatusLine();
     try {
         const response = await fetch('http://localhost:8080/trips');
 
@@ -61,46 +62,10 @@ async function loadTrips() {
         return data;
     } catch (error) {
         console.error('Error:', error);
-        showAddTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
+        showLoadTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
+        return [];
     }
-    // fake trips
-    const savedTrips = [
-        {
-            destination: 'New York',
-            departureDate: new Date('2023-06-01'),
-            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
-            weather: {
-                tempHigh: 20,
-                tempLow: 10,
-                humidity: 80,
-                chanceOfRain: 20
-            }
-        },
-        {
-            destination: 'London',
-            departureDate: new Date('2023-05-01'),
-            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
-            weather: {
-                tempHigh: 10,
-                tempLow: 3,
-                humidity: 90,
-                chanceOfRain: 100
-            }
-        },
-        {
-            destination: 'Paris',
-            departureDate: new Date('2021-07-01'),
-            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
-            weather: {
-                tempHigh: 30,
-                tempLow: 20,
-                humidity: 50,
-                chanceOfRain: 0
-            }
-        }
-    ];
 
-    return savedTrips;
 }
 
 function validateForm() {
@@ -116,21 +81,33 @@ function validateForm() {
 
 
 function showAddTripSuccess(textToShow) {
-    showTextInStatusLine(textToShow, false);
+    showTextInAddTripStatusLine(textToShow, false);
 }
 
 function showAddTripError(textToShow) {
-    showTextInStatusLine(textToShow, true);
+    showTextInAddTripStatusLine(textToShow, true);
 }
 
-function showTextInStatusLine(textToShow, isError) {
-    let statusLine = document.getElementById('form-status-line');
+function showTextInAddTripStatusLine(textToShow, isError) {
+    let statusLine = document.querySelector('#add-trip-status-line');
     statusLine.innerHTML = textToShow;
     if (isError) {
         statusLine.className = 'error';
     } else {
         statusLine.className = 'success';
     }
+}
+
+function showLoadTripError(textToShow) {
+    let statusLine = document.querySelector('#show-trips-status-line');
+    statusLine.innerHTML = textToShow;
+    statusLine.className = 'error';
+}
+
+function resetLoadTripStatusLine() {
+    let statusLine = document.querySelector('#show-trips-status-line');
+    statusLine.innerHTML = '';
+    statusLine.className = '';
 }
 
 

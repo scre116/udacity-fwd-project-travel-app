@@ -1,17 +1,19 @@
+#trips-section {
+  background-color: #FFF5CC;
+}
+
 #trips {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  background-color: #FFF5CC;
 }
 
 .trip {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 80%;
+  width: 95%;
   margin: 20px 0;
   padding: 20px;
   border: 1px solid black;
