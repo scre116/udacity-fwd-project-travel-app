@@ -1,9 +1,6 @@
-const path = require('path')
-const webpack = require('webpack')
-const HtmlWebPackPlugin = require("html-webpack-plugin")
+import HtmlWebPackPlugin from 'html-webpack-plugin';
 
-
-module.exports = {
+export default {
     entry: './src/client/index.js',
     mode: 'development',
     devtool: 'source-map',

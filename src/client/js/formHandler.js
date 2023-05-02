@@ -1,4 +1,4 @@
-import {updateTripsUI} from './tripsUIHandler'
+import {updateTripsUI} from './tripsUIHandler.js'
 
 async function handleSubmit(event) {
     event.preventDefault()

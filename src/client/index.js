@@ -1,4 +1,4 @@
-import {handleSubmit, validateForm} from './js/formHandler'
+import {handleSubmit, validateForm} from './js/formHandler.js'
 
 import './styles/resets.scss'
 import './styles/header.scss'
