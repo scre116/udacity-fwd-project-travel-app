@@ -1,7 +1,7 @@
 import request from 'supertest';
-import app from '../../src/server/index';
+import {app} from '../../src/server/index.js';
 import fetch from 'jest-fetch-mock';
-import * as tripsDB from '../../src/server/tripsDB';
+import * as tripsDB from '../../src/server/tripsDB.js';
 
 describe('GET /', () => {
     it('should respond with index.html', async () => {
@@ -11,6 +11,31 @@ describe('GET /', () => {
         expect(response.text).toContain("<title>Travel Planer</title>");
     });
 });
+
+
+describe('POST /trip', () => {
+    it('should add a trip and return a success message', async () => {
+        const tripData = {
+            destination: 'Test Destination',
+            departureDate: '2023-01-01',
+        };
+
+        tripsDB.addTrip = jest.fn().mockImplementation(() => {
+        });
+
+        const response = await request(app).post('/trip').send(tripData);
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Trip added successfully');
+        expect(tripsDB.addTrip).toHaveBeenCalledWith(
+            expect.objectContaining({
+                destination: tripData.destination,
+                departureDate: tripData.departureDate,
+            }),
+        );
+    });
+});
+
 
 describe('GET /analyze', () => {
     it('should response with analysis', async () => {
