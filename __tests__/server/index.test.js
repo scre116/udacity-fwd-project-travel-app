@@ -1,13 +1,14 @@
-const request = require('supertest');
-const app = require('../../src/server');
-global.fetch = require('jest-fetch-mock');
+import request from 'supertest';
+import app from '../../src/server/index';
+import fetch from 'jest-fetch-mock';
+import * as tripsDB from '../../src/server/tripsDB';
 
 describe('GET /', () => {
     it('should respond with index.html', async () => {
         const response = await request(app).get('/');
 
         expect(response.statusCode).toBe(200);
-        expect(response.text).toContain("<title>Sentiment Analysis</title>");
+        expect(response.text).toContain("<title>Travel Planer</title>");
     });
 });
 
@@ -61,4 +62,23 @@ describe('GET /analyze', () => {
         expect(response.body).toEqual({"error": "some error"});
     });
 
+});
+
+
+describe('GET /trips', () => {
+
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
+
+    it('should return the trips from loadTrips', async () => {
+        const mockTrips = [{destination: 'Paris', departureDate: '2020-01-01'}];
+        tripsDB.loadTrips = jest.fn().mockReturnValue(mockTrips);
+
+        const response = await request(app).get('/trips');
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(mockTrips);
+        expect(tripsDB.loadTrips).toHaveBeenCalled();
+    });
 });
