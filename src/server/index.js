@@ -1,3 +1,5 @@
+import {loadTrips, saveTrips} from './tripsDB';
+
 var path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -63,17 +65,6 @@ app.get('/trips', function (req, res) {
     console.log('Sending trips: ', trips);
     res.send(trips);
 })
-
-function loadTrips() {
-    if (!fs.existsSync('trips-db.json')) {
-        return [];
-    }
-    return JSON.parse(fs.readFileSync('trips-db.json', 'utf8'));
-}
-
-function saveTrips(trips) {
-    fs.writeFileSync('trips-db.json', JSON.stringify(trips), 'utf8');
-}
 
 
 module.exports = app;
