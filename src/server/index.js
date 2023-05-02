@@ -1,4 +1,4 @@
-import {loadTrips, saveTrips} from './tripsDB.js';
+import {addTrip, loadTrips} from './tripsDB.js';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -35,25 +35,10 @@ app.post('/trip', function (req, res) {
         }
     };
 
-    const trips = loadTrips();
-    trips.push(tripToSave);
-    console.log('Saving trips: ', trips);
-    saveTrips(trips);
-
+    addTrip(tripToSave);
 
     res.send({message: 'Trip added successfully'});
-    //
-    // const meaningCloudUrl = `https://api.meaningcloud.com/sentiment-2.1?key=${process.env.MEANINGCLOUD_API_KEY}&lang=en&egp=y&txt=${text}`;
-    // fetch(meaningCloudUrl)
-    //     .then(response => response.json())
-    //     .then(function (response) {
-    //             console.log(response);
-    //             res.send(extractData(response));
-    //         }
-    //     ).catch(function (error) {
-    //     console.error(error);
-    //     res.send({error: error});
-    // })
+ 
 })
 
 app.get('/trips', function (req, res) {

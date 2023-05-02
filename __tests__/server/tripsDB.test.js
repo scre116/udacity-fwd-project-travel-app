@@ -1,5 +1,5 @@
 import fs from 'fs';
-import {loadTrips, saveTrips} from '../../src/server/tripsDB';
+import {addTrip, loadTrips} from '../../src/server/tripsDB';
 
 jest.mock('fs');
 
@@ -24,12 +24,27 @@ describe('trips-db', () => {
         });
     });
 
-    describe('saveTrips', () => {
-        it('should write the JSON stringified trips to the file', () => {
-            const trips = [{id: 1, destination: 'Paris'}];
-            saveTrips(trips);
+    describe('addTrip', () => {
+        it('should add the trip to the saved trips', () => {
+            const oldTrips = [{id: 1, destination: 'Paris'}];
+            fs.existsSync.mockReturnValue(true);
+            fs.readFileSync.mockReturnValue(JSON.stringify(oldTrips));
 
-            expect(fs.writeFileSync).toHaveBeenCalledWith('trips-db.json', '[{"id":1,"destination":"Paris"}]', 'utf8');
+            const newTrip = {id: 2, destination: 'London'};
+            addTrip(newTrip);
+
+            expect(fs.writeFileSync).toHaveBeenCalledWith('trips-db.json',
+                '[{"id":1,"destination":"Paris"},{"id":2,"destination":"London"}]', 'utf8');
+        });
+
+        it('should add the trip to an empty list of trips', () => {
+            fs.existsSync.mockReturnValue(false);
+
+            const newTrip = {id: 2, destination: 'London'};
+            addTrip(newTrip);
+
+            expect(fs.writeFileSync).toHaveBeenCalledWith('trips-db.json',
+                '[{"id":2,"destination":"London"}]', 'utf8');
         });
     });
 });
