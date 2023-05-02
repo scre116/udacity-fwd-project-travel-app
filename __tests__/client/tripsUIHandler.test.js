@@ -1,4 +1,4 @@
-import {computeDaysUntilDeparture, createTripElement, updateTripsUI} from '../../src/client/js/tripsUIHandler';
+import {computeDaysUntilDeparture, createTripElement, updateTripsUI} from '../../src/client/js/tripsUIHandler.js';
 import {JSDOM} from 'jsdom';
 import fs from 'fs';
 import path from 'path';

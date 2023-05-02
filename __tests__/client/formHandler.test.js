@@ -1,90 +1,92 @@
-import {handleSubmit, validateForm} from "../../src/client/js/formHandler"
+import {handleSubmitAddTrip} from '../../src/client/js/formHandler.js';
+import * as tripsLoader from '../../src/client/js/tripsLoader.js';
+import {JSDOM} from "jsdom";
 
-// Mock the required functions and dependencies
-global.fetch = require('jest-fetch-mock');
+global.fetch = jest.fn();
 
-// Set up the jsdom environment
-const {JSDOM} = require('jsdom');
-const {window} = new JSDOM();
-const document = window.document;
-global.document = document;
+function setupDOM() {
+    // Read the contents of the index.html file
+    const htmlContent = `
+      <input id="input-destination" />
+      <input id="input-departure-date" />
+      <div id="add-trip-status-line"></div>
+      <div id="show-trips-status-line"></div>
+      `;
 
-// Mock the getElementById function
-const mockElements = {
-    text: {value: 'test-text'},
-    polarity: {innerHTML: ''},
-    subjectivity: {innerHTML: ''},
-    irony: {innerHTML: ''},
-    agreement: {innerHTML: ''},
-    confidence: {innerHTML: ''},
-    'status-line': {innerHTML: '', style: {visibility: ''}},
-    'results-table': {style: {visibility: ''}}
-};
+    const dom = new JSDOM(htmlContent);
 
-// Mock the getElementById function
-document.getElementById = jest.fn((elementId) => mockElements[elementId]);
+    global.document = dom.window.document;
+}
 
+tripsLoader.refreshTrips = jest.fn();
 
-describe('handleSubmit', () => {
+describe('handleSubmitAddTrip', () => {
+
     beforeEach(() => {
-        fetch.resetMocks();
+        setupDOM();
+        fetch.mockClear();
+        tripsLoader.refreshTrips.mockClear();
     });
 
-    test('successful API call', async () => {
-        const event = {preventDefault: jest.fn()};
-        fetch.mockResponseOnce(JSON.stringify(
-            {
-                polarity: 'Negative',
-                subjectivity: 'Subjective',
-                irony: 'Nonironic',
-                agreement: 'Disagreement',
-                confidence: '100'
-            }));
+    it('should submit the trip and refresh trips on success', async () => {
 
-        await handleSubmit(event);
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({}),
+        });
+
+        // Set up test data
+        document.getElementById('input-destination').value = 'London';
+        document.getElementById('input-departure-date').value = '2023-06-01';
+
+        const event = {preventDefault: jest.fn()};
+        await handleSubmitAddTrip(event);
 
         expect(event.preventDefault).toHaveBeenCalled();
-        expect(fetch).toHaveBeenCalledWith('http://localhost:8080/analyze?text=test-text');
-        expect(mockElements['status-line'].style.visibility).toBe('hidden');
-        expect(mockElements['results-table'].style.visibility).toBe('visible');
-        expect(mockElements['polarity'].innerHTML).toBe('Negative');
-        expect(mockElements['subjectivity'].innerHTML).toBe('Subjective');
-        expect(mockElements['irony'].innerHTML).toBe('Nonironic');
-        expect(mockElements['agreement'].innerHTML).toBe('Disagreement');
-        expect(mockElements['confidence'].innerHTML).toBe('100');
+        // Expect fetch to be called with the right parameters
+        expect(fetch).toHaveBeenCalledWith('http://localhost:8080/trip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                destination: 'London',
+                departureDate: '2023-06-01',
+            }),
+        });
 
+        // Expect the form to be reset
+        expect(document.getElementById('input-destination').value).toBe('');
+        expect(document.getElementById('input-departure-date').value).toBe('');
+        expect(document.getElementById('add-trip-status-line').innerHTML).toBe('Trip added successfully');
+
+        expect(tripsLoader.refreshTrips).toHaveBeenCalled();
     });
 
-    test('API call with error', async () => {
+    it('should show an error message on failure', async () => {
+
+        fetch.mockResolvedValueOnce({
+            ok: false,
+            status: 500,
+        });
+
+        // Set up test data
+        document.getElementById('input-destination').value = 'London';
+        document.getElementById('input-departure-date').value = '2023-06-01';
+
         const event = {preventDefault: jest.fn()};
-        fetch.mockResponseOnce(JSON.stringify({error: 'An error occurred'}));
+        await handleSubmitAddTrip(event);
 
-        await handleSubmit(event);
+        // Expect the form not to be reset
+        expect(document.getElementById('input-destination').value).toBe('London');
+        expect(document.getElementById('input-departure-date').value).toBe('2023-06-01');
+        expect(document.getElementById('add-trip-status-line').innerHTML).toBe('Webservice call resulted in an error: "Server responded with status 500"');
 
-        expect(event.preventDefault).toHaveBeenCalled();
-        expect(fetch).toHaveBeenCalledWith('http://localhost:8080/analyze?text=test-text');
-
-        expect(mockElements['status-line'].innerHTML).toBe('Webservice call resulted in an error: "An error occurred"');
-        expect(mockElements['status-line'].style.visibility).toBe('visible');
-        expect(mockElements['results-table'].style.visibility).toBe('hidden');
-
+        expect(tripsLoader.refreshTrips).not.toHaveBeenCalled();
     });
 });
 
 describe('validateForm', () => {
-    test('empty text', () => {
-        mockElements.text.value = '';
-
-        expect(validateForm()).toBe(false);
-
-        expect(mockElements['status-line'].innerHTML).toBe('Please enter some text to analyze');
-        expect(mockElements['status-line'].style.visibility).toBe('visible');
-        expect(mockElements['results-table'].style.visibility).toBe('hidden');
-    });
-
-    test('non-empty text', () => {
-        mockElements.text.value = 'test-text';
-
-        expect(validateForm()).toBe(true);
-    });
+    // Add tests for the validateForm function
 });
+

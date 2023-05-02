@@ -1,4 +1,4 @@
-import {updateTripsUI} from './tripsUIHandler.js'
+import {refreshTrips} from "./tripsLoader.js";
 
 async function handleSubmitAddTrip(event) {
     event.preventDefault()
@@ -22,10 +22,9 @@ async function handleSubmitAddTrip(event) {
             body: JSON.stringify(newTrip),
         });
 
-        const data = await response.json();
-
-        if (data.error) {
-            throw data.error;
+        if (!response.ok) {
+            console.error('Error response:', response);
+            throw new Error('Server responded with status ' + response.status);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -44,45 +43,10 @@ function resetForm() {
     document.getElementById('input-departure-date').value = '';
 }
 
-async function refreshTrips() {
-    const trips = await loadTrips();
-    updateTripsUI(trips);
-}
-
-async function loadTrips() {
-    resetLoadTripStatusLine();
-    try {
-        const response = await fetch('http://localhost:8080/trips');
-
-        const data = await response.json();
-
-        if (data.error) {
-            throw data.error;
-        }
-        return data;
-    } catch (error) {
-        console.error('Error:', error);
-        showLoadTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
-        return [];
-    }
-
-}
-
-function validateForm() {
-    const textarea = document.getElementById('text');
-
-    if (textarea.value.trim() === '') {
-        showAddTripError('Please enter some text to analyze');
-        return false;
-    } else {
-        return true;
-    }
-}
-
-
 function showAddTripSuccess(textToShow) {
     showTextInAddTripStatusLine(textToShow, false);
 }
+
 
 function showAddTripError(textToShow) {
     showTextInAddTripStatusLine(textToShow, true);
@@ -98,16 +62,16 @@ function showTextInAddTripStatusLine(textToShow, isError) {
     }
 }
 
-function showLoadTripError(textToShow) {
-    let statusLine = document.querySelector('#show-trips-status-line');
-    statusLine.innerHTML = textToShow;
-    statusLine.className = 'error';
+function validateForm() {
+    const textarea = document.getElementById('text');
+
+    if (textarea.value.trim() === '') {
+        showAddTripError('Please enter some text to analyze');
+        return false;
+    } else {
+        return true;
+    }
 }
 
-function resetLoadTripStatusLine() {
-    let statusLine = document.querySelector('#show-trips-status-line');
-    statusLine.innerHTML = '';
-    statusLine.className = '';
-}
 
-export {handleSubmitAddTrip, validateForm, refreshTrips}
+export {handleSubmitAddTrip, validateForm}
