@@ -1,6 +1,6 @@
 import {updateTripsUI} from './tripsUIHandler.js'
 
-async function handleSubmit(event) {
+async function handleSubmitAddTrip(event) {
     event.preventDefault()
     showTextInAddTripStatusLine(null)
 
@@ -110,9 +110,4 @@ function resetLoadTripStatusLine() {
     statusLine.className = '';
 }
 
-
-window.addEventListener('DOMContentLoaded', refreshTrips)
-document.getElementById('form-add-trip').addEventListener('submit', handleSubmit)
-
-
-export {handleSubmit, validateForm}
+export {handleSubmitAddTrip, validateForm, refreshTrips}
