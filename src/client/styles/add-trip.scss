@@ -8,6 +8,11 @@ input {
   width: 100%;
   line-height: 16px;
   margin: 10px 0;
+
+  &:invalid {
+    border: 2px solid red;
+  }
+
 }
 
 label {
