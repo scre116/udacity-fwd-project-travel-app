@@ -76,8 +76,8 @@ describe('createTripElement', () => {
             weather: {
                 tempHigh: 85,
                 tempLow: 60,
-                humidity: 60,
-                chanceOfRain: 20,
+                windSpeed: 5,
+                precipitation: 0,
             },
         };
 
@@ -102,11 +102,11 @@ describe('createTripElement', () => {
         const tempLow = tripElement.querySelector('.temp-low');
         expect(tempLow.innerHTML).toBe('60');
 
-        const humidity = tripElement.querySelector('.humidity');
-        expect(humidity.innerHTML).toBe('60');
+        const windSpeed = tripElement.querySelector('.wind-speed');
+        expect(windSpeed.innerHTML).toBe('5');
 
-        const chanceOfRain = tripElement.querySelector('.chance-of-rain');
-        expect(chanceOfRain.innerHTML).toBe('20');
+        const precipitation = tripElement.querySelector('.precipitation');
+        expect(precipitation.innerHTML).toBe('0');
 
     });
 
@@ -118,8 +118,8 @@ describe('createTripElement', () => {
             weather: {
                 tempHigh: 85,
                 tempLow: 60,
-                humidity: 60,
-                chanceOfRain: 20,
+                windSpeed: 5,
+                precipitation: 0,
             },
         };
 
@@ -137,8 +137,8 @@ describe('createTripElement', () => {
             weather: {
                 tempHigh: 85,
                 tempLow: 60,
-                humidity: 60,
-                chanceOfRain: 20,
+                windSpeed: 5,
+                precipitation: 0,
             },
         };
 
@@ -146,6 +146,21 @@ describe('createTripElement', () => {
 
         const daysUntilDeparture = tripElement.querySelector('.days-until-departure');
         expect(daysUntilDeparture.innerHTML).toBe('(3 days ago)');
+    });
+
+    test('creates a trip element with the correct information when the weather is not available', () => {
+        const trip = {
+            destination: 'New York',
+            departureDate: '2023-08-01', // 'August 1, 2023'
+            imgDestination: 'https://example.com/image.jpg',
+            weather: null,
+        };
+
+        const tripElement = createTripElement(trip);
+
+        const weather = tripElement.querySelector('.weather');
+        expect(weather.innerHTML).toBe('Destination unknown - weather unavailable');
+
     });
 });
 
@@ -165,8 +180,8 @@ describe('updateTripsUI', () => {
                 weather: {
                     tempHigh: 85,
                     tempLow: 60,
-                    humidity: 60,
-                    chanceOfRain: 20,
+                    windSpeed: 5,
+                    precipitation: 0,
                 },
             },
             {
@@ -176,8 +191,8 @@ describe('updateTripsUI', () => {
                 weather: {
                     tempHigh: 75,
                     tempLow: 50,
-                    humidity: 50,
-                    chanceOfRain: 10,
+                    windSpeed: 15,
+                    precipitation: 10,
                 },
             },
         ];

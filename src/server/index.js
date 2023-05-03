@@ -1,5 +1,6 @@
 import {addTrip, loadTrips} from './tripsDB.js';
 import {getInfoFromGeonames} from './geonamesConnector.js';
+import {getInfoFromWeatherbit} from './weatherbitConnector.js';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -22,11 +23,12 @@ app.post('/trip', async function (req, res) {
     const departureDate = req.body.departureDate;
     console.log(`Received request to add trip with destination ${destination} and departure date ${departureDate}`);
 
+    // *** Call Geonames API ***
     console.log('Calling geonames API with search term: ', destination);
     const geonamesInfo = await getInfoFromGeonames(destination);
     console.log('Received geonames info: ', geonamesInfo);
     if (geonamesInfo.error) {
-        warnings.push(`Error while calling geonames API: ${geonamesInfo.error}`);
+        warnings.push(`Error while calling Geonames API: ${geonamesInfo.error}`);
     } else if (geonamesInfo.resultCount === 0) {
         console.warn(`No results found for destination ${destination}`);
         warnings.push(`No results found for destination ${destination}`);
@@ -35,20 +37,31 @@ app.post('/trip', async function (req, res) {
         destination = `${geonamesInfo.name}, ${geonamesInfo.countryName}`;
     }
 
+    // *** Call Weatherbit API ***
+    let weather = null;
+    if (geonamesInfo.lat !== undefined && geonamesInfo.lng !== undefined) {
+        console.log(`Calling weatherbit API with lat ${geonamesInfo.lat}, lng ${geonamesInfo.lng} and departure date ${departureDate}`);
+        const weatherInfo = await getInfoFromWeatherbit(geonamesInfo.lat, geonamesInfo.lng, departureDate);
+        console.log('Received weather info: ', weatherInfo);
+        if (weatherInfo.error) {
+            warnings.push(`Error while calling Weatherbit API: ${weatherInfo.error}`);
+        } else {
+            weather = weatherInfo.weather;
+        }
+    }
+
+    // *** Save trip in database ***
     const tripToSave = {
         destination: destination,
         departureDate: departureDate,
         imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
-        weather: {
-            tempHigh: 20,
-            tempLow: 10,
-            humidity: 80,
-            chanceOfRain: 20
-        }
+        weather: weather,
     };
 
     addTrip(tripToSave);
 
+
+    // *** Send response ***
     res.send({message: 'Trip added successfully', warnings: warnings});
 
 })

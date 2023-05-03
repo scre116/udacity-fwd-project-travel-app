@@ -50,24 +50,30 @@ function createTripElement(trip) {
     imgDestination.src = trip.imgDestination;
     imgDestination.alt = trip.destination;
 
-    // set temperature-high
-    const tempHigh = tripElement.querySelector('.temp-high');
-    tempHigh.innerHTML = trip.weather.tempHigh;
-
-    // set temperature-low
-    const tempLow = tripElement.querySelector('.temp-low');
-    tempLow.innerHTML = trip.weather.tempLow;
-
-    // set humidity
-    const humidity = tripElement.querySelector('.humidity');
-    humidity.innerHTML = trip.weather.humidity;
-
-    // set chance-of-rain
-    const chanceOfRain = tripElement.querySelector('.chance-of-rain');
-    chanceOfRain.innerHTML = trip.weather.chanceOfRain;
+    setWeather(tripElement, trip);
 
     return tripElement;
 
+}
+
+function setWeather(tripElement, trip) {
+    if (!trip.weather) {
+        const weather = tripElement.querySelector('.weather');
+        weather.innerHTML = 'Destination unknown - weather unavailable';
+        return;
+    }
+
+    const tempHigh = tripElement.querySelector('.temp-high');
+    tempHigh.innerHTML = trip.weather.tempHigh;
+    
+    const tempLow = tripElement.querySelector('.temp-low');
+    tempLow.innerHTML = trip.weather.tempLow;
+
+    const windSpeed = tripElement.querySelector('.wind-speed');
+    windSpeed.innerHTML = trip.weather.windSpeed;
+
+    const precipitation = tripElement.querySelector('.precipitation');
+    precipitation.innerHTML = trip.weather.precipitation;
 }
 
 function computeDaysUntilDeparture(departureDate) {

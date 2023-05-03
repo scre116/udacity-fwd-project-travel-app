@@ -2,6 +2,7 @@ import request from 'supertest';
 import {app} from '../../src/server/index.js';
 import * as tripsDB from '../../src/server/tripsDB.js';
 import * as geonamesConnector from '../../src/server/geonamesConnector.js';
+import * as weatherbitConnector from '../../src/server/weatherbitConnector.js';
 
 
 describe('GET /', () => {
@@ -15,6 +16,7 @@ describe('GET /', () => {
 
 
 describe('POST /trip', () => {
+
     it('should add a trip and return a success message', async () => {
         const tripData = {
             destination: 'Searched Destination',
@@ -24,28 +26,53 @@ describe('POST /trip', () => {
         geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
             return {
                 resultCount: 1,
-                lat: 1,
-                lng: 1,
+                lat: 1.57474,
+                lng: -1.23423,
                 name: 'Found Destination',
                 countryName: 'Found Country',
             };
         });
+
+        weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
+            return {
+                weather: {
+                    tempHigh: 20,
+                    tempLow: 10,
+                    windSpeed: 5,
+                    precipitation: 0,
+                },
+            };
+        });
+
         tripsDB.addTrip = jest.fn().mockImplementation(() => {
         });
 
         const response = await request(app).post('/trip').send(tripData);
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Trip added successfully');
-        expect(tripsDB.addTrip).toHaveBeenCalledWith(
-            expect.objectContaining({
-                destination: "Found Destination, Found Country",
-                departureDate: tripData.departureDate,
-            }),
-        );
+        expect(response.body).toEqual({
+            message: 'Trip added successfully',
+            warnings: [],
+        });
+
+        expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
+        expect(weatherbitConnector.getInfoFromWeatherbit).toHaveBeenCalledWith(1.57474, -1.23423, '2023-01-01');
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Found Destination, Found Country',
+            departureDate: '2023-01-01',
+            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            weather: {
+                precipitation: 0,
+                tempHigh: 20,
+                tempLow: 10,
+                windSpeed: 5,
+            },
+        });
+
     });
 
-    it('should return a warning if no destination was found', async () => {
+    it('should add a trip and return a warning if no destination was found', async () => {
         const tripData = {
             destination: 'Searched Destination',
             departureDate: '2023-01-01',
@@ -56,23 +83,28 @@ describe('POST /trip', () => {
                 resultCount: 0,
             };
         });
-        tripsDB.addTrip = jest.fn().mockImplementation(() => {
-        });
+        weatherbitConnector.getInfoFromWeatherbit = jest.fn();
+        tripsDB.addTrip = jest.fn();
 
         const response = await request(app).post('/trip').send(tripData);
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Trip added successfully');
-        expect(response.body.warnings).toEqual(['No results found for destination Searched Destination']);
-        expect(tripsDB.addTrip).toHaveBeenCalledWith(
-            expect.objectContaining({
-                destination: tripData.destination,
-                departureDate: tripData.departureDate,
-            }),
-        );
+        expect(response.body).toEqual({
+            message: 'Trip added successfully',
+            warnings: ['No results found for destination Searched Destination'],
+        });
+
+        expect(weatherbitConnector.getInfoFromWeatherbit).not.toHaveBeenCalled();
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            weather: null,
+        });
     });
 
-    it('should return a warning if geonames API returned an error', async () => {
+    it('should add a trip and return a warning if Geonames API returned an error', async () => {
         const tripData = {
             destination: 'Searched Destination',
             departureDate: '2023-01-01',
@@ -83,20 +115,69 @@ describe('POST /trip', () => {
                 error: 'Error while calling geonames API',
             };
         });
-        tripsDB.addTrip = jest.fn().mockImplementation(() => {
-        });
+        weatherbitConnector.getInfoFromWeatherbit = jest.fn();
+        tripsDB.addTrip = jest.fn();
 
         const response = await request(app).post('/trip').send(tripData);
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Trip added successfully');
-        expect(response.body.warnings).toEqual(['Error while calling geonames API: Error while calling geonames API']);
-        expect(tripsDB.addTrip).toHaveBeenCalledWith(
-            expect.objectContaining({
-                destination: tripData.destination,
-                departureDate: tripData.departureDate,
-            }),
-        );
+        expect(response.body).toEqual({
+            message: 'Trip added successfully',
+            warnings: ['Error while calling Geonames API: Error while calling geonames API'],
+        });
+
+        expect(weatherbitConnector.getInfoFromWeatherbit).not.toHaveBeenCalled();
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            weather: null,
+        });
+    });
+
+    it('should add a trip and return a warning, if Weatherbit API returned an error', async () => {
+        const tripData = {
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+        };
+
+        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                lat: 1.57474,
+                lng: -1.23423,
+                name: 'Found Destination',
+                countryName: 'Found Country',
+            };
+        });
+
+        weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
+            return {
+                error: 'wrong API key',
+            };
+        });
+
+        tripsDB.addTrip = jest.fn();
+
+        const response = await request(app).post('/trip').send(tripData);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({
+            message: 'Trip added successfully',
+            warnings: ['Error while calling Weatherbit API: wrong API key'],
+        });
+
+        expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
+        expect(weatherbitConnector.getInfoFromWeatherbit).toHaveBeenCalledWith(1.57474, -1.23423, '2023-01-01');
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Found Destination, Found Country',
+            departureDate: '2023-01-01',
+            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            weather: null,
+        });
+
     });
 });
 
