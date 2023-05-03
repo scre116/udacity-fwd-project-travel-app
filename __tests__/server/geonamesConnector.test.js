@@ -1,3 +1,5 @@
+// mock .env before import of geonamesConnector.js
+process.env.GEONAMES_USERNAME = 'test-username';
 import {getInfoFromGeonames} from "../../src/server/geonamesConnector.js";
 
 global.fetch = require('jest-fetch-mock');
@@ -17,6 +19,8 @@ describe('getInfoFromGeonames', () => {
         }));
 
         const data = await getInfoFromGeonames('Bree');
+        
+        expect(fetch).toHaveBeenCalledWith('http://api.geonames.org/searchJSON?q=Bree&maxRows=1&fuzzy=0.8&username=test-username');
 
         expect(data).toEqual({
             lat: '51.50853',
