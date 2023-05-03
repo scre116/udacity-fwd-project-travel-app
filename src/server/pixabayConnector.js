@@ -4,7 +4,7 @@ dotenv.config();
 
 function getInfoFromPixabay(searchTerm) {
     const escapedSearchTerm = searchTerm.replaceAll(' ', '+');
-    const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_API_KEY}&q=${escapedSearchTerm}&image_type=photo&orientation=horizontal&category=places&per_page=3`;
+    const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_API_KEY}&q=${escapedSearchTerm}&image_type=photo&orientation=horizontal&per_page=3`;
 
     console.log('Fetching data from Pixabay: ', url);
     return fetch(url)
