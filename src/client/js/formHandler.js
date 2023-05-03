@@ -62,16 +62,5 @@ function showTextInAddTripStatusLine(textToShow, isError) {
     }
 }
 
-function validateForm() {
-    const textarea = document.getElementById('text');
 
-    if (textarea.value.trim() === '') {
-        showAddTripError('Please enter some text to analyze');
-        return false;
-    } else {
-        return true;
-    }
-}
-
-
-export {handleSubmitAddTrip, validateForm}
+export {handleSubmitAddTrip}

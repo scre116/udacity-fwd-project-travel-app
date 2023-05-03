@@ -86,7 +86,4 @@ describe('handleSubmitAddTrip', () => {
     });
 });
 
-describe('validateForm', () => {
-    // Add tests for the validateForm function
-});
 
