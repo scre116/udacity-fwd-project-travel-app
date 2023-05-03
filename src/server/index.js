@@ -1,10 +1,9 @@
 import {addTrip, loadTrips} from './tripsDB.js';
+import {getInfoFromGeonames} from './geonamesConnector.js';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 
-dotenv.config();
 
 const app = express();
 app.use(express.static('dist'));
@@ -16,12 +15,22 @@ app.get('/', function (req, res) {
     res.sendFile('dist/index.html');
 })
 
-app.post('/trip', function (req, res) {
-    console.log(req.body);
-    // extract destination from request body
-    const destination = req.body.destination;
+app.post('/trip', async function (req, res) {
+    const errors = [];
+    console.log('POST /trip received with body', req.body);
+    let destination = req.body.destination;
     const departureDate = req.body.departureDate;
-    console.log(`::: Received request to add trip with destination ${destination} and departure date ${departureDate} :::`);
+    console.log(`Received request to add trip with destination ${destination} and departure date ${departureDate}`);
+
+    console.log('Calling geonames API with search term: ', destination);
+    const geonamesInfo = await getInfoFromGeonames(destination);
+    console.log('Received geonames info: ', geonamesInfo);
+    if (geonamesInfo.resultCount === 0) {
+        errors.push(`No results found for destination ${destination}`);
+    } else {
+        console.log(`Fount destination ${geonamesInfo.name} in country ${geonamesInfo.countryName} at lat ${geonamesInfo.lat} and lng ${geonamesInfo.lng}`);
+        destination = `${geonamesInfo.name}, ${geonamesInfo.countryName}`;
+    }
 
     const tripToSave = {
         destination: destination,
@@ -37,8 +46,8 @@ app.post('/trip', function (req, res) {
 
     addTrip(tripToSave);
 
-    res.send({message: 'Trip added successfully'});
- 
+    res.send({message: 'Trip added successfully', errors: errors});
+
 })
 
 app.get('/trips', function (req, res) {

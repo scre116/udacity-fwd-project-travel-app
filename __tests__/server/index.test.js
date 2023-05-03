@@ -1,6 +1,8 @@
 import request from 'supertest';
 import {app} from '../../src/server/index.js';
 import * as tripsDB from '../../src/server/tripsDB.js';
+import * as geonamesConnector from '../../src/server/geonamesConnector.js';
+
 
 describe('GET /', () => {
     it('should respond with index.html', async () => {
@@ -15,10 +17,19 @@ describe('GET /', () => {
 describe('POST /trip', () => {
     it('should add a trip and return a success message', async () => {
         const tripData = {
-            destination: 'Test Destination',
+            destination: 'Searched Destination',
             departureDate: '2023-01-01',
         };
 
+        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                lat: 1,
+                lng: 1,
+                name: 'Found Destination',
+                countryName: 'Found Country',
+            };
+        });
         tripsDB.addTrip = jest.fn().mockImplementation(() => {
         });
 
@@ -28,7 +39,7 @@ describe('POST /trip', () => {
         expect(response.body.message).toBe('Trip added successfully');
         expect(tripsDB.addTrip).toHaveBeenCalledWith(
             expect.objectContaining({
-                destination: tripData.destination,
+                destination: "Found Destination, Found Country",
                 departureDate: tripData.departureDate,
             }),
         );
