@@ -13,6 +13,7 @@ function forecastIsAvailable(departureDate) {
     const today = new Date();
     today.setHours(0);
     today.setMinutes(0);
+    today.setSeconds(0);
     const departure = new Date(departureDate);
     const daysUntilDeparture = Math.round((departure - today) / (1000 * 60 * 60 * 24));
     console.log(`Today is ${today}, departure is ${departure}, days until departure: ${daysUntilDeparture}`);

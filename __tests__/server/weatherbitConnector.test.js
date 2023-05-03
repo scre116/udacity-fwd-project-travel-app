@@ -6,16 +6,14 @@ global.fetch = require('jest-fetch-mock');
 describe('forecastIsAvailable', () => {
     it('should return true if departure date is within 15 days', () => {
         const today = new Date();
-        const departure = new Date();
-        departure.setDate(today.getDate() + 15);
+        const departure = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 15);
 
         expect(forecastIsAvailable(departure)).toBe(true);
     });
 
     it('should return false if departure date is more than 15 days away', () => {
         const today = new Date();
-        const departure = new Date();
-        departure.setDate(today.getDate() + 16);
+        const departure = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 16);
 
         expect(forecastIsAvailable(departure)).toBe(false);
     });
@@ -29,8 +27,8 @@ describe('forecastIsAvailable', () => {
 
     it('should return false if departure date is in the past', () => {
         const today = new Date();
-        const departure = new Date();
-        departure.setDate(today.getDate() - 1);
+
+        const departure = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
 
         expect(forecastIsAvailable(departure)).toBe(false);
     });
