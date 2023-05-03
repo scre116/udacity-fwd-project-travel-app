@@ -1,6 +1,7 @@
 import {addTrip, loadTrips} from './tripsDB.js';
 import {getInfoFromGeonames} from './geonamesConnector.js';
 import {getInfoFromWeatherbit} from './weatherbitConnector.js';
+import {getInfoFromPixabay} from './pixabayConnector.js';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -30,8 +31,7 @@ app.post('/trip', async function (req, res) {
     if (geonamesInfo.error) {
         warnings.push(`Error while calling Geonames API: ${geonamesInfo.error}`);
     } else if (geonamesInfo.resultCount === 0) {
-        console.warn(`No results found for destination ${destination}`);
-        warnings.push(`No results found for destination ${destination}`);
+        warnings.push(`No results found for destination "${destination}" through Geonames API`);
     } else {
         console.log(`Fount destination ${geonamesInfo.name} in country ${geonamesInfo.countryName} at lat ${geonamesInfo.lat} and lng ${geonamesInfo.lng}`);
         destination = `${geonamesInfo.name}, ${geonamesInfo.countryName}`;
@@ -50,11 +50,24 @@ app.post('/trip', async function (req, res) {
         }
     }
 
+    // *** Call Pixabay API ***
+    let imgUrl = null;
+    console.log(`Calling pixabay API with search term ${destination}`);
+    const pixabayInfo = await getInfoFromPixabay(destination);
+    console.log('Received pixabay info: ', pixabayInfo);
+    if (pixabayInfo.error) {
+        warnings.push(`Error while calling Pixabay API: ${pixabayInfo.error}`);
+    } else if (pixabayInfo.resultCount === 0) {
+        warnings.push(`No pictures found for destination ${destination}`);
+    } else {
+        imgUrl = pixabayInfo.imgUrl;
+    }
+
     // *** Save trip in database ***
     const tripToSave = {
         destination: destination,
         departureDate: departureDate,
-        imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+        imgDestination: imgUrl,
         weather: weather,
     };
 

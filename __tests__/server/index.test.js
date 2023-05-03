@@ -3,7 +3,11 @@ import {app} from '../../src/server/index.js';
 import * as tripsDB from '../../src/server/tripsDB.js';
 import * as geonamesConnector from '../../src/server/geonamesConnector.js';
 import * as weatherbitConnector from '../../src/server/weatherbitConnector.js';
+import * as pixabayConnector from '../../src/server/pixabayConnector.js';
 
+beforeEach(() => {
+    jest.clearAllMocks();
+});
 
 describe('GET /', () => {
     it('should respond with index.html', async () => {
@@ -44,6 +48,13 @@ describe('POST /trip', () => {
             };
         });
 
+        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                imgUrl: 'https://cdn.pixabay.com/abc.jpg',
+            };
+        });
+
         tripsDB.addTrip = jest.fn().mockImplementation(() => {
         });
 
@@ -57,11 +68,12 @@ describe('POST /trip', () => {
 
         expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
         expect(weatherbitConnector.getInfoFromWeatherbit).toHaveBeenCalledWith(1.57474, -1.23423, '2023-01-01');
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Found Destination, Found Country');
 
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Found Destination, Found Country',
             departureDate: '2023-01-01',
-            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            imgDestination: 'https://cdn.pixabay.com/abc.jpg',
             weather: {
                 precipitation: 0,
                 tempHigh: 20,
@@ -84,6 +96,14 @@ describe('POST /trip', () => {
             };
         });
         weatherbitConnector.getInfoFromWeatherbit = jest.fn();
+
+        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                imgUrl: 'https://cdn.pixabay.com/abc.jpg',
+            };
+        });
+
         tripsDB.addTrip = jest.fn();
 
         const response = await request(app).post('/trip').send(tripData);
@@ -91,7 +111,7 @@ describe('POST /trip', () => {
         expect(response.status).toBe(200);
         expect(response.body).toEqual({
             message: 'Trip added successfully',
-            warnings: ['No results found for destination Searched Destination'],
+            warnings: ['No results found for destination "Searched Destination" through Geonames API'],
         });
 
         expect(weatherbitConnector.getInfoFromWeatherbit).not.toHaveBeenCalled();
@@ -99,7 +119,7 @@ describe('POST /trip', () => {
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Searched Destination',
             departureDate: '2023-01-01',
-            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            imgDestination: 'https://cdn.pixabay.com/abc.jpg',
             weather: null,
         });
     });
@@ -116,6 +136,13 @@ describe('POST /trip', () => {
             };
         });
         weatherbitConnector.getInfoFromWeatherbit = jest.fn();
+        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                imgUrl: 'https://cdn.pixabay.com/abc.jpg',
+            };
+        });
+
         tripsDB.addTrip = jest.fn();
 
         const response = await request(app).post('/trip').send(tripData);
@@ -128,10 +155,12 @@ describe('POST /trip', () => {
 
         expect(weatherbitConnector.getInfoFromWeatherbit).not.toHaveBeenCalled();
 
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Searched Destination');
+
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Searched Destination',
             departureDate: '2023-01-01',
-            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            imgDestination: 'https://cdn.pixabay.com/abc.jpg',
             weather: null,
         });
     });
@@ -158,6 +187,13 @@ describe('POST /trip', () => {
             };
         });
 
+        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                imgUrl: 'https://cdn.pixabay.com/abc.jpg',
+            };
+        });
+
         tripsDB.addTrip = jest.fn();
 
         const response = await request(app).post('/trip').send(tripData);
@@ -170,14 +206,180 @@ describe('POST /trip', () => {
 
         expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
         expect(weatherbitConnector.getInfoFromWeatherbit).toHaveBeenCalledWith(1.57474, -1.23423, '2023-01-01');
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Found Destination, Found Country');
 
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Found Destination, Found Country',
             departureDate: '2023-01-01',
-            imgDestination: 'https://cdn.pixabay.com/photo/2013/04/11/19/46/building-102840_960_720.jpg',
+            imgDestination: 'https://cdn.pixabay.com/abc.jpg',
             weather: null,
         });
 
+    })
+
+    it('should add a trip and return a warning if no picture was found', async () => {
+        const tripData = {
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+        };
+
+        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                lat: 1.57474,
+                lng: -1.23423,
+                name: 'Found Destination',
+                countryName: 'Found Country',
+            };
+        });
+
+        weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
+            return {
+                weather: {
+                    tempHigh: 20,
+                    tempLow: 10,
+                    windSpeed: 5,
+                    precipitation: 0,
+                },
+            };
+        });
+
+        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 0,
+            };
+        });
+
+        tripsDB.addTrip = jest.fn();
+
+        const response = await request(app).post('/trip').send(tripData);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({
+            message: 'Trip added successfully',
+            warnings: ['No pictures found for destination Found Destination, Found Country'],
+        });
+
+        expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
+        expect(weatherbitConnector.getInfoFromWeatherbit).toHaveBeenCalledWith(1.57474, -1.23423, '2023-01-01');
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Found Destination, Found Country');
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Found Destination, Found Country',
+            departureDate: '2023-01-01',
+            imgDestination: null,
+            weather: {
+                precipitation: 0,
+                tempHigh: 20,
+                tempLow: 10,
+                windSpeed: 5,
+            },
+        });
+    });
+
+    it('should add a trip and return a warning if Pixaby API call resulted in an error', async () => {
+        const tripData = {
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+        };
+
+        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
+            return {
+                resultCount: 1,
+                lat: 1.57474,
+                lng: -1.23423,
+                name: 'Found Destination',
+                countryName: 'Found Country',
+            };
+        });
+
+        weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
+            return {
+                weather: {
+                    tempHigh: 20,
+                    tempLow: 10,
+                    windSpeed: 5,
+                    precipitation: 0,
+                },
+            };
+        });
+
+        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
+            return {
+                error: 'wrong API key',
+            };
+        });
+
+        tripsDB.addTrip = jest.fn();
+
+        const response = await request(app).post('/trip').send(tripData);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({
+            message: 'Trip added successfully',
+            warnings: ['Error while calling Pixabay API: wrong API key'],
+        });
+
+        expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
+        expect(weatherbitConnector.getInfoFromWeatherbit).toHaveBeenCalledWith(1.57474, -1.23423, '2023-01-01');
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Found Destination, Found Country');
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Found Destination, Found Country',
+            departureDate: '2023-01-01',
+            imgDestination: null,
+            weather: {
+                precipitation: 0,
+                tempHigh: 20,
+                tempLow: 10,
+                windSpeed: 5,
+            },
+        });
+    });
+
+    it('should add a trip and return a warning if all API calls resulted in errors', async () => {
+        const tripData = {
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+        };
+
+        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
+            return {
+                error: 'wrong API key',
+            };
+        });
+
+        weatherbitConnector.getInfoFromWeatherbit = jest.fn();
+
+        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
+            return {
+                error: 'wrong API key',
+            };
+        });
+
+        tripsDB.addTrip = jest.fn();
+
+        const response = await request(app).post('/trip').send(tripData);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({
+            message: 'Trip added successfully',
+            warnings: [
+                'Error while calling Geonames API: wrong API key',
+                'Error while calling Pixabay API: wrong API key',
+            ],
+        });
+
+        expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
+        expect(weatherbitConnector.getInfoFromWeatherbit).not.toHaveBeenCalled();
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Searched Destination');
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+            imgDestination: null,
+            weather: null,
+        });
     });
 });
 
