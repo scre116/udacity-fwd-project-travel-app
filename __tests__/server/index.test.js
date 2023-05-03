@@ -71,6 +71,33 @@ describe('POST /trip', () => {
             }),
         );
     });
+
+    it('should return a warning if geonames API returned an error', async () => {
+        const tripData = {
+            destination: 'Searched Destination',
+            departureDate: '2023-01-01',
+        };
+
+        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
+            return {
+                error: 'Error while calling geonames API',
+            };
+        });
+        tripsDB.addTrip = jest.fn().mockImplementation(() => {
+        });
+
+        const response = await request(app).post('/trip').send(tripData);
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Trip added successfully');
+        expect(response.body.warnings).toEqual(['Error while calling geonames API: Error while calling geonames API']);
+        expect(tripsDB.addTrip).toHaveBeenCalledWith(
+            expect.objectContaining({
+                destination: tripData.destination,
+                departureDate: tripData.departureDate,
+            }),
+        );
+    });
 });
 
 describe('GET /trips', () => {

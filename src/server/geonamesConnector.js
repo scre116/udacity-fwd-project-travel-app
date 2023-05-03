@@ -18,7 +18,7 @@ function getInfoFromGeonames(searchTerm) {
         })
         .catch((err) => {
             console.log(err);
-            return {resultCount: 0};
+            return {error: err};
         });
 }
 

@@ -25,7 +25,9 @@ app.post('/trip', async function (req, res) {
     console.log('Calling geonames API with search term: ', destination);
     const geonamesInfo = await getInfoFromGeonames(destination);
     console.log('Received geonames info: ', geonamesInfo);
-    if (geonamesInfo.resultCount === 0) {
+    if (geonamesInfo.error) {
+        warnings.push(`Error while calling geonames API: ${geonamesInfo.error}`);
+    } else if (geonamesInfo.resultCount === 0) {
         console.warn(`No results found for destination ${destination}`);
         warnings.push(`No results found for destination ${destination}`);
     } else {

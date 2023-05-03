@@ -44,6 +44,6 @@ describe('getInfoFromGeonames', () => {
 
         const data = await getInfoFromGeonames('Barrow Downs');
 
-        expect(data).toEqual({resultCount: 0});
+        expect(data).toEqual({error: new Error('Prohibited destination')});
     });
 });
