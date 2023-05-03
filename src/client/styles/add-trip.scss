@@ -1,6 +1,14 @@
 
 #add-trip {
   background-color: #FFF5CC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#form-add-trip {
+  max-width: 400px;
+  width: 100%;
 }
 
 input {
