@@ -21,9 +21,17 @@
   gap: 10px;
   background-color: #D0E1F9;
 
+  h2 {
+    grid-area: title;
+  }
+
   img {
     width: 100%;
-    margin: 20px 0;
+    grid-area: img;
+  }
+
+  .departure {
+    grid-area: date;
   }
 
   .weather {
@@ -31,10 +39,22 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+    grid-area: weather;
 
     .forecast-type {
       font-weight: bold;
     }
+  }
+}
+
+@media (min-width: 800px) {
+  .trip {
+    display: grid;
+    grid-template-areas:
+      "title title"
+      "date img"
+      "weather img"
+      "weather img";
   }
 }
 
