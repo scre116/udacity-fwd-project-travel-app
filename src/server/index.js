@@ -16,7 +16,7 @@ app.get('/', function (req, res) {
 })
 
 app.post('/trip', async function (req, res) {
-    const errors = [];
+    const warnings = [];
     console.log('POST /trip received with body', req.body);
     let destination = req.body.destination;
     const departureDate = req.body.departureDate;
@@ -26,7 +26,8 @@ app.post('/trip', async function (req, res) {
     const geonamesInfo = await getInfoFromGeonames(destination);
     console.log('Received geonames info: ', geonamesInfo);
     if (geonamesInfo.resultCount === 0) {
-        errors.push(`No results found for destination ${destination}`);
+        console.warn(`No results found for destination ${destination}`);
+        warnings.push(`No results found for destination ${destination}`);
     } else {
         console.log(`Fount destination ${geonamesInfo.name} in country ${geonamesInfo.countryName} at lat ${geonamesInfo.lat} and lng ${geonamesInfo.lng}`);
         destination = `${geonamesInfo.name}, ${geonamesInfo.countryName}`;
@@ -46,7 +47,7 @@ app.post('/trip', async function (req, res) {
 
     addTrip(tripToSave);
 
-    res.send({message: 'Trip added successfully', errors: errors});
+    res.send({message: 'Trip added successfully', warnings: warnings});
 
 })
 

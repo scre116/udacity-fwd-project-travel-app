@@ -31,13 +31,18 @@ h2 {
 }
 
 .error,
-.success {
+.success,
+.warning {
   font-weight: bold;
   font-size: 16px;
 }
 
 .error {
   color: red;
+}
+
+.warning {
+  color: darkorange;
 }
 
 .success {

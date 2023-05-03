@@ -32,7 +32,9 @@ describe('handleSubmitAddTrip', () => {
 
         fetch.mockResolvedValueOnce({
             ok: true,
-            json: async () => ({}),
+            json: async () => ({
+                warnings: [],
+            }),
         });
 
         // Set up test data
@@ -83,6 +85,30 @@ describe('handleSubmitAddTrip', () => {
         expect(document.getElementById('add-trip-status-line').innerHTML).toBe('Webservice call resulted in an error: "Server responded with status 500"');
 
         expect(tripsLoader.refreshTrips).not.toHaveBeenCalled();
+    });
+
+    it('should show a warning message on success with warnings', async () => {
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({
+                warnings: ['Warning 1', 'Warning 2'],
+            }),
+        });
+
+        // Set up test data
+        document.getElementById('input-destination').value = 'London';
+        document.getElementById('input-departure-date').value = '2023-06-01';
+
+        const event = {preventDefault: jest.fn()};
+        await handleSubmitAddTrip(event);
+
+        // Expect the form to be reset
+        expect(document.getElementById('input-destination').value).toBe('');
+        expect(document.getElementById('input-departure-date').value).toBe('');
+        expect(document.getElementById('add-trip-status-line').innerHTML).toBe('Trip added with warnings: Warning 1, Warning 2');
+
+        expect(tripsLoader.refreshTrips).toHaveBeenCalled();
     });
 });
 
