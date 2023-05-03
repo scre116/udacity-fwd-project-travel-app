@@ -11,8 +11,12 @@ function getInfoFromWeatherbit(lat, lng, departureDate) {
 
 function forecastIsAvailable(departureDate) {
     const today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
     const departure = new Date(departureDate);
-    const daysUntilDeparture = Math.floor((departure - today) / (1000 * 60 * 60 * 24));
+    const daysUntilDeparture = Math.round((departure - today) / (1000 * 60 * 60 * 24));
+    console.log(`Today is ${today}, departure is ${departure}, days until departure: ${daysUntilDeparture}`);
+
     return daysUntilDeparture >= 0 && daysUntilDeparture <= 15;
 }
 
@@ -26,12 +30,14 @@ function getWeatherForecast(lat, lng, departureDate) {
             console.log('Received data from Weatherbit: ', data);
             const {max_temp, min_temp, wind_spd, precip} = getForecastForDate(data, departureDate);
             return {
-                weather: {
-                    tempHigh: max_temp,
-                    tempLow: min_temp,
-                    windSpeed: wind_spd,
-                    precipitation: precip
-                }
+                weather:
+                    {
+                        forecastType: 'forecast',
+                        tempHigh: max_temp,
+                        tempLow: min_temp,
+                        windSpeed: wind_spd,
+                        precipitation: precip
+                    }
             };
         })
         .catch((err) => {
@@ -62,6 +68,7 @@ function getWeatherNormals(lat, lng, departureDate) {
             const {max_temp, min_temp, wind_spd, precip} = data.data[0];
             return {
                 weather: {
+                    forecastType: 'normals',
                     tempHigh: max_temp,
                     tempLow: min_temp,
                     windSpeed: wind_spd,

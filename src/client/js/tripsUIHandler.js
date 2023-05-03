@@ -63,9 +63,16 @@ function setWeather(tripElement, trip) {
         return;
     }
 
+    const forecastType = tripElement.querySelector('.forecast-type');
+    if (trip.weather.forecastType === 'normals') {
+        forecastType.innerHTML = 'Typical weather for this day of year';
+    } else {
+        forecastType.innerHTML = 'Weather forecast';
+    }
+
     const tempHigh = tripElement.querySelector('.temp-high');
     tempHigh.innerHTML = trip.weather.tempHigh;
-    
+
     const tempLow = tripElement.querySelector('.temp-low');
     tempLow.innerHTML = trip.weather.tempLow;
 

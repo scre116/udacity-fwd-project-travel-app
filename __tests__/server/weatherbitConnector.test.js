@@ -54,6 +54,7 @@ describe('Get weather normals', () => {
             'https://api.weatherbit.io/v2.0/normals?lat=51.50853&lon=-0.12574&start_day=01-01&end_day=01-01&tp=daily&key=test-key');
         expect(data).toEqual({
             weather: {
+                forecastType: 'normals',
                 tempHigh: 20,
                 tempLow: 10,
                 windSpeed: 5,
@@ -106,6 +107,7 @@ describe('Get weather forecast', () => {
         expect(fetch).toHaveBeenCalledWith("https://api.weatherbit.io/v2.0/forecast/daily?lat=51.50853&lon=-0.12574&key=test-key");
         expect(data).toEqual({
             weather: {
+                forecastType: 'forecast',
                 tempHigh: 40,
                 tempLow: 30,
                 windSpeed: 15,
