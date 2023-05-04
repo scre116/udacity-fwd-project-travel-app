@@ -4,7 +4,7 @@ import {CleanWebpackPlugin} from 'clean-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-// import WorkboxPlugin from 'workbox-webpack-plugin';
+import WorkboxPlugin from 'workbox-webpack-plugin';
 import {fileURLToPath} from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,7 +59,6 @@ export default {
         new MiniCssExtractPlugin({
             filename: "[name].css",
         }),
-        // new WorkboxPlugin.GenerateSW({
-        // }),
+        new WorkboxPlugin.GenerateSW({}),
     ]
 }
