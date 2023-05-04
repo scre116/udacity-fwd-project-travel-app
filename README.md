@@ -1,4 +1,4 @@
-# Travel planer app
+# Travel Planer
 
 ## Overview
 
@@ -32,7 +32,9 @@ The trips are saved and loaded on the server within the 'trips-db.json' file.
 - Sass
 - Jest
 - Service Workers
-- MeaningCloud API
+- Geonames API
+- Weatherbit API
+- Pixabay API
 
 ## Licenses
 
