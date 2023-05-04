@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project features a travel app that enables users to plan their trips. It provides a weather forecast for the destination on the departure date and an image of the location. The app utilizes the Geonames, Weatherbit, and Pixabay APIs to obtain the weather forecast and images.
+This project features a travel app that enables users to plan their trips. It provides a weather forecast for the destination on the departure date and an image of the location. The app utilizes the [Geonames](http://www.geonames.org/), [Weatherbit](https://www.weatherbit.io/), and [Pixabay](https://pixabay.com/) APIs to obtain the weather forecast and images.
 
 If a weather forecast is unavailable, the weather normals for that day are displayed as an alternative. This is currently dependent on the free trial account for the Weatherbit API.
 
@@ -33,4 +33,10 @@ The trips are saved and loaded on the server within the 'trips-db.json' file.
 - Jest
 - Service Workers
 - MeaningCloud API
+
+## Licenses
+
+- Geonames API: creative commons attributions license.
+- Weatherbit API: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 Generic License.
+- Pixabay API: Creative Commons Zero (CC0) license, Content License.
 
