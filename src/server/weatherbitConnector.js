@@ -9,14 +9,14 @@ function getInfoFromWeatherbit(lat, lng, departureDate) {
     return getWeatherNormals(lat, lng, departureDate);
 }
 
-function forecastIsAvailable(departureDate) {
+function forecastIsAvailable(departure) {
     const today = new Date();
     today.setHours(0);
     today.setMinutes(0);
     today.setSeconds(0);
-    const departure = new Date(departureDate);
-    const daysUntilDeparture = Math.round((departure - today) / (1000 * 60 * 60 * 24));
-    console.log(`Today is ${today}, departure is ${departure}, days until departure: ${daysUntilDeparture}`);
+    const departureDate = new Date(departure);
+    const daysUntilDeparture = Math.round((departureDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    console.log(`Today is ${today}, departure is ${departureDate}, days until departure: ${daysUntilDeparture}`);
 
     return daysUntilDeparture >= 0 && daysUntilDeparture <= 15;
 }

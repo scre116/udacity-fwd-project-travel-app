@@ -35,7 +35,7 @@ describe('getInfoFromPixabay', () => {
         expect(data).toEqual({resultCount: 0});
     });
 
-    it('should return empty result if an error has occurred', async () => {
+    it('should return the error if an error has occurred', async () => {
         // fetch throws an error
         fetch.mockRejectOnce(new Error('Prohibited destination'));
 

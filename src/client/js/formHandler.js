@@ -41,7 +41,7 @@ async function handleSubmitAddTrip(event) {
     }
 
     resetForm();
-    
+
     if (responseBody.warnings && responseBody.warnings.length > 0) {
         showAddTripWarning('Trip added with warnings: ' + responseBody.warnings.join(', '));
     } else {
@@ -77,9 +77,7 @@ function showTextInAddTripStatusLine(textToShow, type) {
 }
 
 function resetStatusLine() {
-    let statusLine = document.querySelector('#add-trip-status-line');
-    statusLine.innerHTML = '';
-    statusLine.className = '';
+    showTextInAddTripStatusLine('', '');
 }
 
 

@@ -34,114 +34,115 @@ describe('forecastIsAvailable', () => {
     });
 });
 
-describe('Get weather normals', () => {
+describe('getInfoFromWeatherbit', () => {
+    describe('Get weather normals', () => {
+        it('should return the correct data', async () => {
+            fetch.mockResponseOnce(JSON.stringify({
+                data: [{
+                    max_temp: 20,
+                    min_temp: 10,
+                    wind_spd: 5,
+                    precip: 0,
+                }]
+            }));
 
-    it('should return the correct data', async () => {
-        fetch.mockResponseOnce(JSON.stringify({
-            data: [{
-                max_temp: 20,
-                min_temp: 10,
-                wind_spd: 5,
-                precip: 0,
-            }]
-        }));
+            const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2021-01-01');
 
-        const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2021-01-01');
+            expect(fetch).toHaveBeenCalledWith(
+                'https://api.weatherbit.io/v2.0/normals?lat=51.50853&lon=-0.12574&start_day=01-01&end_day=01-01&tp=daily&key=test-key');
+            expect(data).toEqual({
+                weather: {
+                    forecastType: 'normals',
+                    tempHigh: 20,
+                    tempLow: 10,
+                    windSpeed: 5,
+                    precipitation: 0,
+                }
+            });
+        });
 
-        expect(fetch).toHaveBeenCalledWith(
-            'https://api.weatherbit.io/v2.0/normals?lat=51.50853&lon=-0.12574&start_day=01-01&end_day=01-01&tp=daily&key=test-key');
-        expect(data).toEqual({
-            weather: {
-                forecastType: 'normals',
-                tempHigh: 20,
-                tempLow: 10,
-                windSpeed: 5,
-                precipitation: 0,
-            }
+        it('should return empty result if an error has occurred', async () => {
+            // fetch throws an error
+            fetch.mockRejectOnce(new Error('Bad request'));
+
+            const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2021-01-01');
+
+            expect(data).toEqual({error: new Error('Bad request')});
         });
     });
 
-    it('should return empty result if an error has occurred', async () => {
-        // fetch throws an error
-        fetch.mockRejectOnce(new Error('Bad request'));
-
-        const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2021-01-01');
-
-        expect(data).toEqual({error: new Error('Bad request')});
-    });
-});
-
-describe('Get weather forecast', () => {
-    beforeEach(() => {
-        // Mock the new Date() call
-        jest.useFakeTimers('modern');
-        jest.setSystemTime(new Date('2017-04-01'));
-    });
-
-    afterEach(() => {
-        // Restore the system time after each test
-        jest.useRealTimers();
-    });
-
-    it('should return the correct data', async () => {
-        fetch.mockResponseOnce(JSON.stringify({
-            data: [{
-                valid_date: "2017-04-01",
-                max_temp: 20,
-                min_temp: 10,
-                wind_spd: 5,
-                precip: 0,
-            }, {
-                valid_date: "2017-04-02",
-                max_temp: 40,
-                min_temp: 30,
-                wind_spd: 15,
-                precip: 10,
-            }]
-        }));
-
-        const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2017-04-02');
-
-        expect(fetch).toHaveBeenCalledWith("https://api.weatherbit.io/v2.0/forecast/daily?lat=51.50853&lon=-0.12574&key=test-key");
-        expect(data).toEqual({
-            weather: {
-                forecastType: 'forecast',
-                tempHigh: 40,
-                tempLow: 30,
-                windSpeed: 15,
-                precipitation: 10,
-            }
+    describe('Get weather forecast', () => {
+        beforeEach(() => {
+            // Mock the new Date() call
+            jest.useFakeTimers('modern');
+            jest.setSystemTime(new Date('2017-04-01'));
         });
-    });
 
-    it('should return empty result if an error has occurred', async () => {
-        // fetch throws an error
-        fetch.mockRejectOnce(new Error('Bad request'));
+        afterEach(() => {
+            // Restore the system time after each test
+            jest.useRealTimers();
+        });
 
-        const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2017-04-02');
+        it('should return the correct data', async () => {
+            fetch.mockResponseOnce(JSON.stringify({
+                data: [{
+                    valid_date: "2017-04-01",
+                    max_temp: 20,
+                    min_temp: 10,
+                    wind_spd: 5,
+                    precip: 0,
+                }, {
+                    valid_date: "2017-04-02",
+                    max_temp: 40,
+                    min_temp: 30,
+                    wind_spd: 15,
+                    precip: 10,
+                }]
+            }));
 
-        expect(data).toEqual({error: new Error('Bad request')});
-    });
+            const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2017-04-02');
 
-    it('should return empty result if no forecast is available', async () => {
-        fetch.mockResponseOnce(JSON.stringify({
-            data: [{
-                valid_date: "2017-04-01",
-                max_temp: 20,
-                min_temp: 10,
-                wind_spd: 5,
-                precip: 0,
-            }, {
-                valid_date: "2017-04-03",
-                max_temp: 40,
-                min_temp: 30,
-                wind_spd: 15,
-                precip: 10,
-            }]
-        }));
+            expect(fetch).toHaveBeenCalledWith("https://api.weatherbit.io/v2.0/forecast/daily?lat=51.50853&lon=-0.12574&key=test-key");
+            expect(data).toEqual({
+                weather: {
+                    forecastType: 'forecast',
+                    tempHigh: 40,
+                    tempLow: 30,
+                    windSpeed: 15,
+                    precipitation: 10,
+                }
+            });
+        });
 
-        const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2017-04-02');
+        it('should return empty result if an error has occurred', async () => {
+            // fetch throws an error
+            fetch.mockRejectOnce(new Error('Bad request'));
 
-        expect(data).toEqual({error: new Error('No forecast available for departure date')});
+            const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2017-04-02');
+
+            expect(data).toEqual({error: new Error('Bad request')});
+        });
+
+        it('should return empty result if no forecast is available', async () => {
+            fetch.mockResponseOnce(JSON.stringify({
+                data: [{
+                    valid_date: "2017-04-01",
+                    max_temp: 20,
+                    min_temp: 10,
+                    wind_spd: 5,
+                    precip: 0,
+                }, {
+                    valid_date: "2017-04-03",
+                    max_temp: 40,
+                    min_temp: 30,
+                    wind_spd: 15,
+                    precip: 10,
+                }]
+            }));
+
+            const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2017-04-02');
+
+            expect(data).toEqual({error: new Error('No forecast available for departure date')});
+        });
     });
 });

@@ -16,9 +16,7 @@ async function loadTrips() {
         showLoadTripError("Webservice call resulted in an error: " + JSON.stringify(error.message));
         return [];
     }
-
 }
-
 
 function showLoadTripError(textToShow) {
     let statusLine = document.querySelector('#show-trips-status-line');
