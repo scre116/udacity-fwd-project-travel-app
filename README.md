@@ -1,4 +1,4 @@
-# Travel Planer
+# Travel Planner
 
 ## Overview
 

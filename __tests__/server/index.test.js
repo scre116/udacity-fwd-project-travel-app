@@ -14,7 +14,7 @@ describe('GET /', () => {
         const response = await request(app).get('/');
 
         expect(response.statusCode).toBe(200);
-        expect(response.text).toContain("<title>Travel Planer</title>");
+        expect(response.text).toContain("<title>Travel Planner</title>");
     });
 });
 
