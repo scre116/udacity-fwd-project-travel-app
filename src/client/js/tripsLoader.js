@@ -1,4 +1,4 @@
-import {updateTripsUI} from './tripsUIHandler.js'
+import {updateTripsUI} from './tripsUIHandler.js';
 
 async function refreshTrips() {
     const trips = await loadTrips();
@@ -30,4 +30,4 @@ function resetLoadTripStatusLine() {
     statusLine.className = '';
 }
 
-export {refreshTrips}
+export {refreshTrips};

@@ -101,4 +101,4 @@ function computeDaysUntilDeparture(departureDate) {
     return Math.round(timeDifference / (1000 * 60 * 60 * 24));
 }
 
-export {updateTripsUI, createTripElement, computeDaysUntilDeparture}
+export {updateTripsUI, createTripElement, computeDaysUntilDeparture};

@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
     res.sendFile('dist/index.html');
-})
+});
 
 app.post('/trip', async function (req, res) {
     const warnings = [];
@@ -85,14 +85,14 @@ app.post('/trip', async function (req, res) {
     // *** Send response ***
     res.send({message: 'Trip added successfully', warnings: warnings});
 
-})
+});
 
 app.get('/trips', function (req, res) {
     console.log('Received request to get trips');
     const trips = loadTrips();
     console.log('Sending trips: ', trips);
     res.send(trips);
-})
+});
 
 
 export {app};

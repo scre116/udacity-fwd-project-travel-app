@@ -1,13 +1,13 @@
 import {refreshTrips} from "./tripsLoader.js";
 
 async function handleSubmitAddTrip(event) {
-    event.preventDefault()
-    resetStatusLine()
+    event.preventDefault();
+    resetStatusLine();
 
-    const searchedDestination = document.getElementById('input-destination').value
-    const departureDate = document.getElementById('input-departure-date').value
+    const searchedDestination = document.getElementById('input-destination').value;
+    const departureDate = document.getElementById('input-departure-date').value;
 
-    console.log(`::: Form Submitted with destination ${searchedDestination} and departure date ${departureDate} :::`)
+    console.log(`::: Form Submitted with destination ${searchedDestination} and departure date ${departureDate} :::`);
 
     // send request to server
     let newTrip = {destination: searchedDestination, departureDate: departureDate};
@@ -81,4 +81,4 @@ function resetStatusLine() {
 }
 
 
-export {handleSubmitAddTrip}
+export {handleSubmitAddTrip};
