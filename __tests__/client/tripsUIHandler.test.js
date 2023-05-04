@@ -162,6 +162,27 @@ describe('createTripElement', () => {
         expect(weather.innerHTML).toBe('Destination unknown - weather unavailable');
 
     });
+
+    test('creates a trip element with the correct information when the image is not available', () => {
+        const trip = {
+            destination: 'Long Bottom, Middle Earth',
+            departureDate: '2023-08-01', // 'August 1, 2023'
+            imgDestination: null,
+            weather: {
+                tempHigh: 85,
+                tempLow: 60,
+                windSpeed: 5,
+                precipitation: 0,
+            },
+        };
+
+        const tripElement = createTripElement(trip);
+
+        const imgDestination = tripElement.querySelector('.img-destination');
+        expect(imgDestination.src).toBe('test-file-stub');
+        expect(imgDestination.alt).toBe('Long Bottom, Middle Earth');
+
+    });
 });
 
 describe('updateTripsUI', () => {

@@ -51,7 +51,7 @@ app.post('/trip', async function (req, res) {
     }
 
     // *** Call Pixabay API ***
-    let imgUrl = 'https://pixabay.com/get/g36febc1a57d6e60176f1eb69abe9eff3f2264cc91c32fd36a072a1fc813270901c99a082880ca1559f4d9852446a06ed_640.jpg';
+    let imgUrl = null;
     console.log(`Calling pixabay API with search term ${destination}`);
     const pixabayInfo = await getInfoFromPixabay(destination);
     console.log('Received pixabay info: ', pixabayInfo);

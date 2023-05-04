@@ -1,3 +1,5 @@
+import placeholderImage from '../images/idealistic-view-horizontal.jpg';
+
 function updateTripsUI(savedTrips) {
     console.log('Updating UI with trips: ', savedTrips);
     const trips = document.getElementById('trips');
@@ -47,8 +49,12 @@ function createTripElement(trip) {
 
     // set image
     const imgDestination = tripElement.querySelector('.img-destination');
-    imgDestination.src = trip.imgDestination;
     imgDestination.alt = trip.destination;
+    if (trip.imgDestination) {
+        imgDestination.src = trip.imgDestination;
+    } else {
+        imgDestination.src = placeholderImage;
+    }
 
     setWeather(tripElement, trip);
 

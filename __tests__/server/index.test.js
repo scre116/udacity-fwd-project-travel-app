@@ -20,7 +20,6 @@ describe('GET /', () => {
 
 
 describe('POST /trip', () => {
-    const placeholderImage = 'https://pixabay.com/get/g36febc1a57d6e60176f1eb69abe9eff3f2264cc91c32fd36a072a1fc813270901c99a082880ca1559f4d9852446a06ed_640.jpg';
 
     const tripData = {
         destination: 'Searched Destination',
@@ -231,7 +230,7 @@ describe('POST /trip', () => {
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Found Destination, Found Country',
             departureDate: '2023-01-01',
-            imgDestination: placeholderImage,
+            imgDestination: null,
             weather: {
                 precipitation: 0,
                 tempHigh: 20,
@@ -270,7 +269,7 @@ describe('POST /trip', () => {
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Found Destination, Found Country',
             departureDate: '2023-01-01',
-            imgDestination: placeholderImage,
+            imgDestination: null,
             weather: {
                 precipitation: 0,
                 tempHigh: 20,
@@ -316,7 +315,7 @@ describe('POST /trip', () => {
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Searched Destination',
             departureDate: '2023-01-01',
-            imgDestination: placeholderImage,
+            imgDestination: null,
             weather: null,
         });
     });
