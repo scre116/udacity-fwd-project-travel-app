@@ -17,7 +17,7 @@ describe('getInfoFromPixabay', () => {
         const data = await getInfoFromPixabay('Bree, Middle Earth');
 
         expect(fetch).toHaveBeenCalledWith('https://pixabay.com/api/?key=pixabay-api-key' +
-            '&q=Bree,+Middle+Earth&image_type=photo&orientation=horizontal&per_page=3');
+            '&q=Bree%2C%20Middle%20Earth&image_type=photo&orientation=horizontal&per_page=3');
         expect(data).toEqual({
             imgUrl: 'https://pixabay.com/get/54e8d14b4d52a814f6da8c7dda79367b1c3ad9e4564c704c7c2f7cd09e4dc15db8_640.jpg',
             resultCount: 100,

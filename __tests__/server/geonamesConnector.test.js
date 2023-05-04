@@ -18,9 +18,9 @@ describe('getInfoFromGeonames', () => {
             }]
         }));
 
-        const data = await getInfoFromGeonames('Bree');
-        
-        expect(fetch).toHaveBeenCalledWith('http://api.geonames.org/searchJSON?q=Bree&maxRows=1&fuzzy=0.8&username=test-username');
+        const data = await getInfoFromGeonames('Bree, on the Greenway');
+
+        expect(fetch).toHaveBeenCalledWith('http://api.geonames.org/searchJSON?q=Bree%2C%20on%20the%20Greenway&maxRows=1&fuzzy=0.8&username=test-username');
 
         expect(data).toEqual({
             lat: '51.50853',

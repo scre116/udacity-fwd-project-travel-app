@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 function getInfoFromGeonames(searchTerm) {
-    const url = `http://api.geonames.org/searchJSON?q=${searchTerm}&maxRows=1&fuzzy=0.8&username=${process.env.GEONAMES_USERNAME}`;
+    const encodedSearchTerm = encodeURIComponent(searchTerm);
+    const url = `http://api.geonames.org/searchJSON?q=${encodedSearchTerm}&maxRows=1&fuzzy=0.8&username=${process.env.GEONAMES_USERNAME}`;
 
     return fetch(url)
         .then((res) => res.json())
