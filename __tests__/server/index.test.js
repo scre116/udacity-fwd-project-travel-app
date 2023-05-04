@@ -22,12 +22,12 @@ describe('GET /', () => {
 describe('POST /trip', () => {
     const placeholderImage = 'https://pixabay.com/get/g36febc1a57d6e60176f1eb69abe9eff3f2264cc91c32fd36a072a1fc813270901c99a082880ca1559f4d9852446a06ed_640.jpg';
 
-    it('should add a trip and return a success message', async () => {
-        const tripData = {
-            destination: 'Searched Destination',
-            departureDate: '2023-01-01',
-        };
+    const tripData = {
+        destination: 'Searched Destination',
+        departureDate: '2023-01-01',
+    };
 
+    function mockGeonames() {
         geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
             return {
                 resultCount: 1,
@@ -37,7 +37,9 @@ describe('POST /trip', () => {
                 countryName: 'Found Country',
             };
         });
+    }
 
+    function mockWeatherbit() {
         weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
             return {
                 weather: {
@@ -48,16 +50,29 @@ describe('POST /trip', () => {
                 },
             };
         });
+    }
 
+    function mockPixabay() {
         pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
             return {
                 resultCount: 1,
                 imgUrl: 'https://cdn.pixabay.com/abc.jpg',
             };
         });
+    }
 
-        tripsDB.addTrip = jest.fn().mockImplementation(() => {
-        });
+    function mockTripsDB() {
+        tripsDB.addTrip = jest.fn();
+    }
+
+    it('should add a trip and return a success message', async () => {
+        mockGeonames();
+
+        mockWeatherbit();
+
+        mockPixabay();
+
+        mockTripsDB();
 
         const response = await request(app).post('/trip').send(tripData);
 
@@ -82,30 +97,21 @@ describe('POST /trip', () => {
                 windSpeed: 5,
             },
         });
-
     });
 
     it('should add a trip and return a warning if no destination was found', async () => {
-        const tripData = {
-            destination: 'Searched Destination',
-            departureDate: '2023-01-01',
-        };
 
         geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
             return {
                 resultCount: 0,
             };
         });
-        weatherbitConnector.getInfoFromWeatherbit = jest.fn();
 
-        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
-            return {
-                resultCount: 1,
-                imgUrl: 'https://cdn.pixabay.com/abc.jpg',
-            };
-        });
+        mockWeatherbit();
 
-        tripsDB.addTrip = jest.fn();
+        mockPixabay();
+
+        mockTripsDB();
 
         const response = await request(app).post('/trip').send(tripData);
 
@@ -117,6 +123,8 @@ describe('POST /trip', () => {
 
         expect(weatherbitConnector.getInfoFromWeatherbit).not.toHaveBeenCalled();
 
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Searched Destination');
+
         expect(tripsDB.addTrip).toHaveBeenCalledWith({
             destination: 'Searched Destination',
             departureDate: '2023-01-01',
@@ -126,25 +134,18 @@ describe('POST /trip', () => {
     });
 
     it('should add a trip and return a warning if Geonames API returned an error', async () => {
-        const tripData = {
-            destination: 'Searched Destination',
-            departureDate: '2023-01-01',
-        };
 
         geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
             return {
                 error: 'Error while calling geonames API',
             };
         });
-        weatherbitConnector.getInfoFromWeatherbit = jest.fn();
-        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
-            return {
-                resultCount: 1,
-                imgUrl: 'https://cdn.pixabay.com/abc.jpg',
-            };
-        });
 
-        tripsDB.addTrip = jest.fn();
+        mockWeatherbit();
+
+        mockPixabay();
+
+        mockTripsDB();
 
         const response = await request(app).post('/trip').send(tripData);
 
@@ -167,20 +168,8 @@ describe('POST /trip', () => {
     });
 
     it('should add a trip and return a warning, if Weatherbit API returned an error', async () => {
-        const tripData = {
-            destination: 'Searched Destination',
-            departureDate: '2023-01-01',
-        };
 
-        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
-            return {
-                resultCount: 1,
-                lat: 1.57474,
-                lng: -1.23423,
-                name: 'Found Destination',
-                countryName: 'Found Country',
-            };
-        });
+        mockGeonames();
 
         weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
             return {
@@ -188,14 +177,9 @@ describe('POST /trip', () => {
             };
         });
 
-        pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
-            return {
-                resultCount: 1,
-                imgUrl: 'https://cdn.pixabay.com/abc.jpg',
-            };
-        });
+        mockPixabay();
 
-        tripsDB.addTrip = jest.fn();
+        mockTripsDB();
 
         const response = await request(app).post('/trip').send(tripData);
 
@@ -219,31 +203,10 @@ describe('POST /trip', () => {
     })
 
     it('should add a trip and return a warning if no picture was found', async () => {
-        const tripData = {
-            destination: 'Searched Destination',
-            departureDate: '2023-01-01',
-        };
 
-        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
-            return {
-                resultCount: 1,
-                lat: 1.57474,
-                lng: -1.23423,
-                name: 'Found Destination',
-                countryName: 'Found Country',
-            };
-        });
+        mockGeonames();
 
-        weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
-            return {
-                weather: {
-                    tempHigh: 20,
-                    tempLow: 10,
-                    windSpeed: 5,
-                    precipitation: 0,
-                },
-            };
-        });
+        mockWeatherbit();
 
         pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
             return {
@@ -251,7 +214,7 @@ describe('POST /trip', () => {
             };
         });
 
-        tripsDB.addTrip = jest.fn();
+        mockTripsDB();
 
         const response = await request(app).post('/trip').send(tripData);
 
@@ -279,31 +242,10 @@ describe('POST /trip', () => {
     });
 
     it('should add a trip and return a warning if Pixaby API call resulted in an error', async () => {
-        const tripData = {
-            destination: 'Searched Destination',
-            departureDate: '2023-01-01',
-        };
 
-        geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
-            return {
-                resultCount: 1,
-                lat: 1.57474,
-                lng: -1.23423,
-                name: 'Found Destination',
-                countryName: 'Found Country',
-            };
-        });
+        mockGeonames();
 
-        weatherbitConnector.getInfoFromWeatherbit = jest.fn().mockImplementation(() => {
-            return {
-                weather: {
-                    tempHigh: 20,
-                    tempLow: 10,
-                    windSpeed: 5,
-                    precipitation: 0,
-                },
-            };
-        });
+        mockWeatherbit();
 
         pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
             return {
@@ -311,7 +253,7 @@ describe('POST /trip', () => {
             };
         });
 
-        tripsDB.addTrip = jest.fn();
+        mockTripsDB();
 
         const response = await request(app).post('/trip').send(tripData);
 
@@ -339,10 +281,6 @@ describe('POST /trip', () => {
     });
 
     it('should add a trip and return a warning if all API calls resulted in errors', async () => {
-        const tripData = {
-            destination: 'Searched Destination',
-            departureDate: '2023-01-01',
-        };
 
         geonamesConnector.getInfoFromGeonames = jest.fn().mockImplementation(() => {
             return {
@@ -350,7 +288,7 @@ describe('POST /trip', () => {
             };
         });
 
-        weatherbitConnector.getInfoFromWeatherbit = jest.fn();
+        mockWeatherbit();
 
         pixabayConnector.getInfoFromPixabay = jest.fn().mockImplementation(() => {
             return {
@@ -358,7 +296,7 @@ describe('POST /trip', () => {
             };
         });
 
-        tripsDB.addTrip = jest.fn();
+        mockTripsDB();
 
         const response = await request(app).post('/trip').send(tripData);
 
@@ -380,6 +318,43 @@ describe('POST /trip', () => {
             departureDate: '2023-01-01',
             imgDestination: placeholderImage,
             weather: null,
+        });
+    });
+
+    it('should return an error if the trip could not be saved', async function () {
+
+        mockGeonames();
+
+        mockWeatherbit();
+
+        mockPixabay();
+
+        tripsDB.addTrip = jest.fn().mockImplementation(() => {
+            throw new Error('Could not save trip');
+        });
+
+        const response = await request(app).post('/trip').send(tripData);
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            message: 'Error while saving trip in database: Could not save trip',
+            warnings: [],
+        });
+
+        expect(geonamesConnector.getInfoFromGeonames).toHaveBeenCalledWith('Searched Destination');
+        expect(weatherbitConnector.getInfoFromWeatherbit).toHaveBeenCalledWith(1.57474, -1.23423, '2023-01-01');
+        expect(pixabayConnector.getInfoFromPixabay).toHaveBeenCalledWith('Found Destination, Found Country');
+
+        expect(tripsDB.addTrip).toHaveBeenCalledWith({
+            destination: 'Found Destination, Found Country',
+            departureDate: '2023-01-01',
+            imgDestination: 'https://cdn.pixabay.com/abc.jpg',
+            weather: {
+                precipitation: 0,
+                tempHigh: 20,
+                tempLow: 10,
+                windSpeed: 5,
+            },
         });
     });
 });
