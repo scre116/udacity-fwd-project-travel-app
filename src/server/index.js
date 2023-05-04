@@ -71,8 +71,16 @@ app.post('/trip', async function (req, res) {
         weather: weather,
     };
 
-    addTrip(tripToSave);
-
+    try {
+        addTrip(tripToSave);
+    } catch (error) {
+        console.log('Error while saving trip in database: ', error);
+        res.status(500).send({
+            message: 'Error while saving trip in database: ' + error.message,
+            warnings: warnings
+        });
+        return;
+    }
 
     // *** Send response ***
     res.send({message: 'Trip added successfully', warnings: warnings});
