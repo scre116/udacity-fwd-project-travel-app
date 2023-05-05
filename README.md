@@ -12,7 +12,7 @@ The trips are saved and loaded on the server within the 'trips-db.json' file.
 
 ## Instructions
 
-1. Create a `.env` file in the root directory of the project.
+1. Create a `.env` file in the root directory of the project. See example.env for an example.
 2. Get a username for Geonames API [here](https://www.geonames.org/login). Put the username into the `.env` file as property `GEONAMES_USERNAME=<your username>`.
 3. Get a Weatherbit API key [here](https://www.weatherbit.io/account/create). Put the key into the `.env` file as property `WEATHERBIT_API_KEY=<your key>`.
 4. Get a Pixabay API key [here](https://pixabay.com/). Put the key into the `.env` file as property `PIXABAY_API_KEY=<your key>`.
