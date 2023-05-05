@@ -145,4 +145,14 @@ describe('getInfoFromWeatherbit', () => {
             expect(data).toEqual({error: new Error('No forecast available for departure date')});
         });
     });
+
+    describe('Error handling', () => {
+        it('should return an error if Weatherbit API key is not configured', async () => {
+            delete process.env.WEATHERBIT_API_KEY;
+
+            const data = await getInfoFromWeatherbit(51.50853, -0.12574, '2021-01-01');
+
+            expect(data).toEqual({error: new Error('Weatherbit API key is not configured')});
+        });
+    });
 });

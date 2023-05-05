@@ -42,6 +42,21 @@ describe('getInfoFromGeonames', () => {
         expect(data).toEqual({resultCount: 0});
     });
 
+    it('should return empty result if API did not return a proper result', async () => {
+        fetch.mockResponseOnce(JSON.stringify({
+            status: {
+                message: 'user account not enabled to use the free webservice',
+                value: 10
+            }
+        }));
+
+        const data = await getInfoFromGeonames('Longbottom');
+
+        expect(data).toEqual({
+            error: new Error('Geonames API returned an unexpected result: user account not enabled to use the free webservice')
+        });
+    });
+
     it('should return empty result if an error has occurred', async () => {
         // fetch throws an error
         fetch.mockRejectOnce(new Error('Prohibited destination'));
@@ -49,5 +64,13 @@ describe('getInfoFromGeonames', () => {
         const data = await getInfoFromGeonames('Barrow Downs');
 
         expect(data).toEqual({error: new Error('Prohibited destination')});
+    });
+
+    it('should return an error if the Geonames user was not configured', async () => {
+        delete process.env.GEONAMES_USERNAME;
+
+        const data = await getInfoFromGeonames('Bree');
+
+        expect(data).toEqual({error: new Error('Geonames username was not configured')});
     });
 });

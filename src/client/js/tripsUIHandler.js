@@ -95,7 +95,7 @@ function computeDaysUntilDeparture(departureDate) {
     const departureDateMidnight = new Date(departureDate.getFullYear(), departureDate.getMonth(), departureDate.getDate());
 
     const timeDifference = departureDateMidnight.getTime() - todayMidnight.getTime();
-    if (timeDifference == 0) {
+    if (timeDifference === 0) {
         return 0;
     }
     return Math.round(timeDifference / (1000 * 60 * 60 * 24));

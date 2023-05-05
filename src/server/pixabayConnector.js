@@ -4,9 +4,15 @@ dotenv.config();
 
 function getInfoFromPixabay(searchTerm) {
     const escapedSearchTerm = encodeURIComponent(searchTerm);
-    const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_API_KEY}&q=${escapedSearchTerm}&image_type=photo&orientation=horizontal&per_page=3`;
+    const pixabayApiKey = process.env.PIXABAY_API_KEY;
+    if (!pixabayApiKey) {
+        return {error: new Error('Pixabay API key was not configured')};
+    }
 
-    console.log('Fetching data from Pixabay: ', url);
+    const urlWithoutKey = `https://pixabay.com/api/?q=${escapedSearchTerm}&image_type=photo&orientation=horizontal&per_page=3&key=`;
+    console.log(`Fetching data from Pixabay: ${urlWithoutKey}*****`);
+    const url = `${urlWithoutKey}${pixabayApiKey}`;
+
     return fetch(url)
         .then((res) => res.json())
         .then((data) => {

@@ -3,6 +3,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 function getInfoFromWeatherbit(lat, lng, departureDate) {
+    const weatherbitApiKey = process.env.WEATHERBIT_API_KEY;
+    if (!weatherbitApiKey) {
+        return {error: new Error('Weatherbit API key is not configured')};
+    }
+
     if (forecastIsAvailable(departureDate)) {
         return getWeatherForecast(lat, lng, departureDate);
     }
@@ -22,9 +27,11 @@ function forecastIsAvailable(departure) {
 }
 
 function getWeatherForecast(lat, lng, departureDate) {
-    const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lng}&key=${process.env.WEATHERBIT_API_KEY}`;
+    const urlWithoutKey = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lng}&key=`;
+    console.log(`Fetching data from Weatherbit: ${urlWithoutKey}*****`);
 
-    console.log('Fetching data from Weatherbit: ', url);
+    const url = `${urlWithoutKey}${process.env.WEATHERBIT_API_KEY}`;
+
     return fetch(url)
         .then((res) => res.json())
         .then((data) => {
@@ -59,9 +66,11 @@ function getForecastForDate(data, departureDate) {
 
 function getWeatherNormals(lat, lng, departureDate) {
     const formattedDate = formatDate(departureDate);
-    const url = `https://api.weatherbit.io/v2.0/normals?lat=${lat}&lon=${lng}&start_day=${formattedDate}&end_day=${formattedDate}&tp=daily&key=${process.env.WEATHERBIT_API_KEY}`;
+    const urlWithoutKey = `https://api.weatherbit.io/v2.0/normals?lat=${lat}&lon=${lng}&start_day=${formattedDate}&end_day=${formattedDate}&tp=daily&key=`;
+    console.log(`Fetching data from Weatherbit: ${urlWithoutKey}*****`);
 
-    console.log('Fetching data from Weatherbit: ', url);
+    const url = `${urlWithoutKey}${process.env.WEATHERBIT_API_KEY}`;
+    
     return fetch(url)
         .then((res) => res.json())
         .then((data) => {
